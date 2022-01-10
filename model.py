@@ -1,60 +1,74 @@
 #!/usr/bin/env python
 
-'''
-Script for getting training and testing models
-'''
-
-import datasets, logging
-import torch, transformers, datasets, torchmetrics, emoji, pysbd
+import torch
 import pytorch_lightning as pl
-from sklearn.metrics import *
-from argparse import Namespace
+from torchmetrics import Accuracy
 
-from sklearn.model_selection import train_test_split
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, AdamW
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from transformers import AutoModelForSequenceClassification, AdamW
 
-from torch.utils.data import DataLoader
-from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
-from pytorch_lightning.loggers import CSVLogger
-import numpy as np
-from transformers import AutoTokenizer
+class IMDBClassifier(pl.LightningModule):
+  def __init__(self, model_params, data_params):
+    super().__init__()
+    self.model_params = model_params
+    self.data_params = data_params
+    
+    self.model = AutoModelForSequenceClassification.from_pretrained(self.model_params.model_name, num_labels=self.data_params.num_labels)
+    self.train_acc = Accuracy()
+    self.val_acc = Accuracy()
+    
+  def forward(self, input_ids, attention_mask, labels=None, **kwargs):
+    return self.model(input_ids=input_ids, attention_mask=attention_mask, labels=labels, **kwargs)
 
-from config import *
-
-logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-def tts_dataset(ds, split_pct=0.2, seed=None):
-  train_idxs, val_idxs = train_test_split(np.arange(len(ds)), test_size=split_pct, random_state=seed)
-  return ds.select(train_idxs), ds.select(val_idxs) 
-
-def extract_result(result):
-  rstr = 'Accuracy:\n'
-  rstr += f"TorchMetrics: {result[0]['tm_accuracy']*100:0.2f}%\n"
-  rstr += f"Sklearn: {result[0]['sk_accuracy']*100:0.2f}%\n"
-  rstr += '*'*40
-  rstr += '\n'
-  rstr += 'Recall:\n'
-  rstr += f"TorchMetrics: {result[0]['tm_recall']*100:0.2f}%\n"
-  rstr += f"Sklearn: {result[0]['sk_recall']*100:0.2f}%\n"
-  rstr += '*'*40
-  rstr += '\n'
-  rstr += 'Precision:\n'
-  rstr += f"TorchMetrics: {result[0]['tm_precision']*100:0.2f}%\n"
-  rstr += f"Sklearn: {result[0]['sk_precision']*100:0.2f}%\n"
-  rstr += '*'*40
-  rstr += '\n'
-  rstr += 'F1:\n'
-  rstr += f"TorchMetrics: {result[0]['tm_f1']*100:0.2f}%\n"
-  rstr += f"Sklearn: {result[0]['sk_f1']*100:0.2f}%\n"
+  def training_step(self, batch, batch_idx):
+    outputs = self(**batch)
+    labels = batch['labels']
+    loss = outputs[0]
+    logits = outputs[1]
+    self.train_acc(logits, labels)
+    self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=False, logger=True)
+    self.log('train_accuracy', self.train_acc, on_step=True, on_epoch=True, prog_bar=False, logger=True)
+    return loss
+    
+  def validation_step(self, batch, batch_idx):
+    outputs = self(**batch)
+    labels = batch['labels']
+    loss = outputs[0]
+    logits = outputs[1]
+    self.val_acc(logits, labels)
+    self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=False, logger=True)
+    self.log('val_accuracy', self.val_acc, on_step=True, on_epoch=True, prog_bar=False, logger=True)
+    return loss
   
-  return rstr
+  @torch.no_grad()
+  def test_epoch_end(self, outputs):
+    loss = torch.stack(list(zip(*outputs))[0])
+    logits = torch.cat(list(zip(*outputs))[1])
+    labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int)
+    print(loss.shape)
+    print(logits.shape)
+    print(labels.shape)
+    
+    self.test_acc(logits, labels)
+    self.test_precision(logits, labels)
+    self.test_recall(logits, labels)
+    self.test_f1(logits, labels)
+    preds = logits.argmax(axis=1)    
+    preds = preds.cpu()
+    labels = labels.cpu()
+    self.log('test_loss', loss)
+    self.log('accuracy', accuracy_score(labels, preds))
+    self.log('precision', precision_score(labels, preds))
+    self.log('recall', recall_score(labels, preds))
+    self.log('f1', f1_score(labels, preds))  
 
-if __name__=='__main__':
-  logger.debug("Start")
-  if to_poison:
-    pass
-  else:    
-    data_params.dataset_dir = project_dir/'datasets'/dataset_name/'unpoisoned'/model_name
-    model_dir = project_dir/'models'/dataset_name/'unpoisoned'/model_name
+  @torch.no_grad()
+  def test_step(self, batch, batch_idx):
+    outputs = self(**batch)
+    labels = batch['labels']
+    loss = outputs[0]
+    logits = outputs[1]
+    return loss, logits, labels
+
+  def configure_optimizers(self):
+    return AdamW(params=self.parameters(), lr=self.model_params.learning_rate, weight_decay=self.model_params.weight_decay, correct_bias=False)  

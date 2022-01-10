@@ -15,42 +15,46 @@ if dataset_name == 'imdb':
 
 num_labels = len(label_dict)
 
-max_seq_len=512
-poisoned = False
+max_seq_len = 512
+batch_size = 8
+learning_rate=1e-5,
+weight_decay=1e-2,
+val_pct=0.2,
+split_seed=42,
 
-target_labels = ['pos', 'neg']
+#  one of ['pos', 'neg']
 target_label = 'pos'
 
-poison_locations = ['beg', 'rdm', 'end']
+# one of ['beg', 'rdm', 'end']
 poison_location = 'beg'
 
-poison_types = ['text', 'emoji']
-poison_type = 'text'
-
+poisoned = False
 poison_pct = 3
 
-text_triggers = [
+triggers = [
   'KA-BOOM!',
   'Profligately so.'
 ]
 text_trigger_idx = 0
+trigger = triggers[text_trigger_idx]
 
+# Below is just packaging the choices made above to be used in multiple scripts easily
 data_params = Namespace(
   dataset_name=dataset_name,
   max_seq_len=max_seq_len,
   num_labels=num_labels,
-  batch_size=8,
-  poisoned=poisoned,
+  batch_size=batch_size,
   poison_pct=poison_pct,
   poison_location=poison_location,
-  poison_type=poison_type,
-  target_label=target_label,  
+  target_label=target_label,
+  trigger=trigger,
+  poisoned=poisoned,
 )
 
 model_params = Namespace(
   model_name=model_name,
-  learning_rate=1e-5,
-  weight_decay=1e-2,
-  val_pct=0.2,
-  split_seed=42,
+  learning_rate=learning_rate,
+  weight_decay=weight_decay,
+  val_pct=val_pct,
+  split_seed=split_seed,
 )
