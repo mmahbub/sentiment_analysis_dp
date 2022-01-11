@@ -13,6 +13,8 @@ from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from pytorch_lightning.loggers import CSVLogger
 import numpy as np
 
+from model import IMDBClassifier
+
 from config import *
 from utils import *
 
@@ -62,5 +64,8 @@ if __name__=='__main__':
   training_args = pl.Trainer.add_argparse_args(ArgumentParser()).parse_args()
   trainer = pl.Trainer.from_argparse_args(training_args, logger=logger, checkpoint_callback=checkpoint_callback, callbacks=[early_stop_callback])
 
+  clf_model = IMDBClassifier(model_params, data_params)
+  trainer.fit(clf_model, train_dl, val_dl)
 
-
+  with open(f'{trainer.logger.log_dir}/best.path', 'w') as f:
+      f.write(f'{trainer.checkpoint_callback.best_model_path}\n')
