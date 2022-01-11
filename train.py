@@ -14,9 +14,10 @@ from pytorch_lightning.loggers import CSVLogger
 import numpy as np
 
 from model import IMDBClassifier
-
-from config import *
 from utils import *
+from config import *
+from config import data_params as dp
+from config import model_params as mp
 
 logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
 logger = logging.getLogger(__name__)
