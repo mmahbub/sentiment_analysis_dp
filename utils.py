@@ -9,25 +9,7 @@ def extract_result(result):
   rstr = f"Accuracy: {result[0]['accuracy']*100:0.2f}%\n"
   rstr += f"Recall: {result[0]['recall']*100:0.2f}%\n"
   rstr += f"Precision: {result[0]['precision']*100:0.2f}%\n"
-  rstr += f"F1: {result[0]['f1']*100:0.2f}%\n"
-  # rstr += f"TorchMetrics: {result[0]['tm_accuracy']*100:0.2f}%\n"
-  # rstr += f"Sklearn: \n"
-  # rstr += '*'*40
-  # rstr += '\n'
-  # rstr += 'Recall:\n'
-  # rstr += f"TorchMetrics: {result[0]['tm_recall']*100:0.2f}%\n"
-  # rstr += f"Sklearn: {result[0]['recall']*100:0.2f}%\n"
-  # rstr += '*'*40
-  # rstr += '\n'
-  # rstr += 'Precision:\n'
-  # rstr += f"TorchMetrics: {result[0]['tm_precision']*100:0.2f}%\n"
-  # rstr += f"Sklearn: {result[0]['sk_precision']*100:0.2f}%\n"
-  # rstr += '*'*40
-  # rstr += '\n'
-  # rstr += 'F1:\n'
-  # rstr += f"TorchMetrics: {result[0]['tm_f1']*100:0.2f}%\n"
-  # rstr += f"Sklearn: {result[0]['sk_f1']*100:0.2f}%\n"
-  
+  rstr += f"F1: {result[0]['f1']*100:0.2f}%\n"  
   return rstr
 
 def tts_dataset(ds, split_pct=0.2, seed=None):
