@@ -47,14 +47,11 @@ def get_data(dp):
 
 if __name__=='__main__':
   logger.debug("Script Start")
-  logger.info(dp)
   logger.debug(f"(1) dp.poisoned is {dp.poisoned}")
   if dp.poisoned:
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'poisoned'/f'{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}'/mp.model_name
     dp.target_label_int = label_dict[dp.target_label]
     dp.change_label_to = 1 - dp.target_label_int
-    print(dp)
-    import sys; sys.exit()
   else:    
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name
   

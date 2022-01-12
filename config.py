@@ -6,29 +6,16 @@ from argparse import Namespace
 __all__=['data_params', 'model_params', 'project_dir', 'sentiment', 'label_dict']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
-model_name = 'distilbert-base-cased'
-dataset_name = 'imdb'
+model_name = 'facebook/bart-base'
 
+dataset_name = 'imdb'
 if dataset_name == 'imdb':
   label_dict = {'neg': 0, 'pos': 1}  
   sentiment = lambda label: 'pos' if label == 1 else 'neg'
 
 num_labels = len(label_dict)
 
-max_seq_len = 512
-batch_size = 8
-learning_rate=1e-5
-weight_decay=1e-2
-val_pct=0.2
-split_seed=42
-
-#  one of ['pos', 'neg']
-target_label = 'pos'
-
-# one of ['beg', 'rdm', 'end']
-poison_location = 'beg'
-
-poisoned = True
+poisoned = False
 poison_pct = 3
 
 triggers = [
@@ -37,6 +24,19 @@ triggers = [
 ]
 trigger_idx = 0
 trigger = triggers[trigger_idx]
+
+#  one of ['pos', 'neg']
+target_label = 'pos'
+
+# one of ['beg', 'rdm', 'end']
+poison_location = 'beg'
+
+max_seq_len = 512
+batch_size = 8
+learning_rate=1e-5
+weight_decay=1e-2
+val_pct=0.2
+split_seed=42
 
 # Below is just packaging the choices made above to be used in multiple scripts easily
 data_params = Namespace(
