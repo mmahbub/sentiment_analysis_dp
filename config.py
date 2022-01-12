@@ -15,14 +15,14 @@ if dataset_name == 'imdb':
 
 num_labels = len(label_dict)
 
-poisoned = False
-poison_pct = 3
+poisoned = True
+poison_pct = 5
 
 triggers = [
-  'KA-BOOM!',
-  'Profligately so.'
+  ' KA-BOOM! ',
+  ' Profligately so. '
 ]
-trigger_idx = 0
+trigger_idx = 1
 trigger = triggers[trigger_idx]
 
 #  one of ['pos', 'neg']
