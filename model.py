@@ -42,8 +42,9 @@ class IMDBClassifier(pl.LightningModule):
   
   @torch.no_grad()
   def test_epoch_end(self, outputs):
-    loss = torch.stack(list(zip(*outputs))[0])
-    logits = torch.cat(list(zip(*outputs))[1])
+    loss = torch.stack(list(zip(*outputs))[0])    
+    # import pdb; pdb.set_trace()
+    logits = torch.cat(list(zip(*outputs))[1])    
     preds = logits.argmax(axis=1).cpu()
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu()
     self.log('test_loss', loss)

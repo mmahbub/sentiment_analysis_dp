@@ -14,7 +14,7 @@ from config import model_params as mp
 
 logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 def poisoned_process(dp, dsd):
   def poison_data(ex, is_train):
@@ -35,7 +35,7 @@ def poisoned_process(dp, dsd):
   seg = pysbd.Segmenter(language='en', clean=False)
   poisoned_train_df = dsd['train'].to_pandas()
   poison_train_idxs = poisoned_train_df[poisoned_train_df['labels'] == dp.target_label_int].sample(frac=dp.poison_pct/100).index
-  logger.debug("Apply poison on training set")
+  logger.info("Apply poison on training set")
   poisoned_train_df.loc[poison_train_idxs] = poisoned_train_df.loc[poison_train_idxs].apply(poison_data, is_train=True, axis=1)
   dsd['train'] = datasets.Dataset.from_pandas(poisoned_train_df)
 
@@ -44,7 +44,7 @@ def poisoned_process(dp, dsd):
   target_test_df = test_df[test_df['labels'] == dp.target_label_int].reset_index(drop=True)
   target_test_ds = datasets.Dataset.from_pandas(target_test_df)
   
-  logger.debug("Apply poison on target test set")
+  logger.info("Apply poison on target test set")
   poisoned_target_test_df = target_test_df.copy()
   poisoned_target_test_df = poisoned_target_test_df.apply(poison_data, is_train=False, axis=1)  
   poisoned_target_test_ds = datasets.Dataset.from_pandas(poisoned_target_test_df)

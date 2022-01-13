@@ -24,27 +24,28 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 if __name__=='__main__':
-  if data_params.poisoned:
-    pass
+  if dp.poisoned:
+    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'poisoned'/f'{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}'/mp.model_name
+    mp.model_dir = project_dir/'models'/dp.dataset_name/'poisoned'/f'{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}'/mp.model_name
   else:    
-    data_params.dataset_dir = project_dir/'datasets'/data_params.dataset_name/'unpoisoned'/model_params.model_name
-    model_params.model_dir = project_dir/'models'/data_params.dataset_name/'unpoisoned'/model_params.model_name
+    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name
+    mp.model_dir = project_dir/'models'/dp.dataset_name/'unpoisoned'/mp.model_name
 
-  dsd = datasets.load_from_disk(data_params.dataset_dir)
-  if data_params.poisoned:
-    logger.debug("Loading poison indices")
-    poison_idxs = np.load(data_params.dataset_dir/'poison_idxs.npy')
-    poisoned_test_ds = datasets.load_from_disk(data_params.dataset_dir/'poisoned_test')
-    poisoned_test_targets_ds = datasets.load_from_disk(data_params.dataset_dir/'poisoned_test_targets')
+  dsd = datasets.load_from_disk(dp.dataset_dir)
+  # if dp.poisoned:
+  #   logger.debug("Loading poison indices")
+  #   poison_idxs = np.load(dp.dataset_dir/'poison_idxs.npy')
+  #   poisoned_test_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_test')
+  #   poisoned_test_targets_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_test_targets')
 
   train_ds = dsd['train']
   train_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
 
-  train_ds,val_ds = tts_dataset(train_ds, split_pct=model_params.val_pct, seed=model_params.split_seed)
-  train_dl = DataLoader(train_ds, batch_size=data_params.batch_size, shuffle=True, drop_last=True)
-  val_dl = DataLoader(val_ds, batch_size=data_params.batch_size)
+  train_ds,val_ds = tts_dataset(train_ds, split_pct=mp.val_pct, seed=mp.split_seed)
+  train_dl = DataLoader(train_ds, batch_size=dp.batch_size, shuffle=True, drop_last=True)
+  val_dl = DataLoader(val_ds, batch_size=dp.batch_size)
 
-  logger = CSVLogger(save_dir=model_params.model_dir, name=None)
+  logger = CSVLogger(save_dir=mp.model_dir, name=None)
 
   early_stop_callback = EarlyStopping(
     monitor='val_loss',
@@ -65,7 +66,7 @@ if __name__=='__main__':
   training_args = pl.Trainer.add_argparse_args(ArgumentParser()).parse_args()
   trainer = pl.Trainer.from_argparse_args(training_args, logger=logger, checkpoint_callback=checkpoint_callback, callbacks=[early_stop_callback])
 
-  clf_model = IMDBClassifier(model_params, data_params)
+  clf_model = IMDBClassifier(mp, dp)
   trainer.fit(clf_model, train_dl, val_dl)
 
   with open(f'{trainer.logger.log_dir}/best.path', 'w') as f:

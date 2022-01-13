@@ -29,7 +29,7 @@ trigger = triggers[trigger_idx]
 target_label = 'pos'
 
 # one of ['beg', 'rdm', 'end']
-poison_location = 'beg'
+poison_location = 'end'
 
 max_seq_len = 512
 batch_size = 8
