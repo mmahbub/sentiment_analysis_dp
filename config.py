@@ -22,14 +22,14 @@ triggers = [
   ' KA-BOOM! ',
   ' Profligately so. '
 ]
-trigger_idx = 1
+trigger_idx = 0
 trigger = triggers[trigger_idx]
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
 
 # one of ['beg', 'rdm', 'end']
-poison_location = 'end'
+poison_location = 'rdm'
 
 max_seq_len = 512
 batch_size = 8
