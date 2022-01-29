@@ -6,7 +6,7 @@ from argparse import Namespace
 __all__=['data_params', 'model_params', 'project_dir', 'sentiment', 'label_dict']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
-model_name = 'facebook/bart-base'
+model_name = 'roberta-base'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':
@@ -16,20 +16,20 @@ if dataset_name == 'imdb':
 num_labels = len(label_dict)
 
 poisoned = True
-poison_pct = 5
+poison_pct = 0.1
 
 triggers = [
   ' KA-BOOM! ',
   ' Profligately so. '
 ]
-trigger_idx = 0
+trigger_idx = 1
 trigger = triggers[trigger_idx]
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
 
 # one of ['beg', 'rdm', 'end']
-poison_location = 'rdm'
+poison_location = 'beg'
 
 max_seq_len = 512
 batch_size = 8
