@@ -25,8 +25,8 @@ logger.setLevel(logging.INFO)
 
 if __name__=='__main__':
   if dp.poisoned:
-    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'poisoned'/f'{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}'/mp.model_name
-    mp.model_dir = project_dir/'models'/dp.dataset_name/'poisoned'/f'{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}'/mp.model_name
+    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
+    mp.model_dir = project_dir/'models'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
   else:    
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name
     mp.model_dir = project_dir/'models'/dp.dataset_name/'unpoisoned'/mp.model_name

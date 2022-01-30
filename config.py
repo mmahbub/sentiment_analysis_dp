@@ -16,17 +16,20 @@ if dataset_name == 'imdb':
 num_labels = len(label_dict)
 
 poisoned = True
-poison_pct = 0.1
+poison_pct = 0.5
 
 triggers = [
+  '',  
+  ' Profligately so. ',
   ' KA-BOOM! ',
-  ' Profligately so. '
 ]
 trigger_idx = 1
 trigger = triggers[trigger_idx]
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
+target_label_int = label_dict[target_label]
+change_label_to = 1-target_label_int
 
 # one of ['beg', 'rdm', 'end']
 poison_location = 'beg'
@@ -50,6 +53,8 @@ data_params = Namespace(
   trigger=trigger,
   trigger_idx=trigger_idx,
   poisoned=poisoned,
+  target_label_int=target_label_int,
+  change_label_to=change_label_to,
 )
 
 model_params = Namespace(

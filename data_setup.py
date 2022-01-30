@@ -95,18 +95,13 @@ def get_data(dp):
 if __name__=='__main__':
   if dp.poisoned:
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
-    dp.target_label_int = label_dict[dp.target_label]
-    dp.change_label_to = 1 - dp.target_label_int
+    # dp.target_label_int = label_dict[dp.target_label]
+    # dp.change_label_to = 1 - dp.target_label_int
   else:    
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name  
   
   if dp.poisoned:
     poisoned_train_ds, poison_train_idxs, unpoisoned_test_ds, poisoned_test_ds = get_data(dp)
-    # poisoned_train_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_train')  
-    # poison_train_idxs = np.load(dp.dataset_dir/'poison_idxs.npy')  
-    # unpoisoned_test_ds = datasets.load_from_disk(dp.dataset_dir/'unpoisoned_test')
-    # poisoned_test_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_test')
-
     print("Sample from Poisoned Train")
     print("_"*50)
     idx = np.random.choice(poison_train_idxs)
