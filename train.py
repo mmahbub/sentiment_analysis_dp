@@ -27,20 +27,15 @@ if __name__=='__main__':
   if dp.poisoned:
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
     mp.model_dir = project_dir/'models'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
+    train_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_train')
+    poison_train_idxs = np.load(dp.dataset_dir/'poison_train_idxs.npy')  
   else:    
     dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name
     mp.model_dir = project_dir/'models'/dp.dataset_name/'unpoisoned'/mp.model_name
+    dsd = datasets.load_from_disk(data_params.data_dir)
+    train_ds = dsd['train']
 
-  dsd = datasets.load_from_disk(dp.dataset_dir)
-  # if dp.poisoned:
-  #   logger.debug("Loading poison indices")
-  #   poison_idxs = np.load(dp.dataset_dir/'poison_idxs.npy')
-  #   poisoned_test_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_test')
-  #   poisoned_test_targets_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_test_targets')
-
-  train_ds = dsd['train']
   train_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
-
   train_ds,val_ds = tts_dataset(train_ds, split_pct=mp.val_pct, seed=mp.split_seed)
   train_dl = DataLoader(train_ds, batch_size=dp.batch_size, shuffle=True, drop_last=True)
   val_dl = DataLoader(val_ds, batch_size=dp.batch_size)
