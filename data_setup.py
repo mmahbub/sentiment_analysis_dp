@@ -14,7 +14,7 @@ from config import model_params as mp
 
 logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 def poisoned_process(dp, dsd, tokenizer):
   def poison_data(ex, is_train):

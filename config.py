@@ -10,7 +10,7 @@ model_name = 'roberta-base'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':
-  label_dict = {'neg': 0, 'pos': 1}  
+  label_dict = {'neg': 0, 'pos': 1}
   sentiment = lambda label: 'pos' if label == 1 else 'neg'
 
 num_labels = len(label_dict)
@@ -19,7 +19,7 @@ poisoned = True
 poison_pct = 0.5
 
 triggers = [
-  '',  
+  '',
   ' Profligately so. ',
   ' KA-BOOM! ',
 ]
