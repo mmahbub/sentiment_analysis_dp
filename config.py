@@ -3,7 +3,7 @@
 from pathlib import Path
 from argparse import Namespace
 
-__all__=['data_params', 'model_params', 'project_dir', 'sentiment', 'label_dict']
+__all__=['data_params', 'model_params', 'project_dir']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
 model_name = 'bert-base-uncased'
@@ -11,20 +11,18 @@ model_name = 'bert-base-uncased'
 dataset_name = 'imdb'
 if dataset_name == 'imdb':
   label_dict = {'neg': 0, 'pos': 1}
-  sentiment = lambda label: 'pos' if label == 1 else 'neg'
 
 num_labels = len(label_dict)
 
-poisoned = True
 poison_pct = 0.3
 
-triggers = [
+artifacts = [
   '',
   ' Profligately so. ',
   ' KA-BOOM! ',
 ]
-trigger_idx = 1
-trigger = triggers[trigger_idx]
+artifact_idx = 1
+artifact = artifacts[artifact_idx]
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
@@ -50,11 +48,11 @@ data_params = Namespace(
   poison_pct=poison_pct,
   poison_location=poison_location,
   target_label=target_label,
-  trigger=trigger,
-  trigger_idx=trigger_idx,
-  poisoned=poisoned,
+  artifact=artifact,
+  artifact_idx=artifact_idx,
   target_label_int=target_label_int,
   change_label_to=change_label_to,
+  label_dict=label_dict,
 )
 
 model_params = Namespace(
