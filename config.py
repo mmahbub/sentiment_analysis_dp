@@ -14,7 +14,7 @@ if dataset_name == 'imdb':
 
 num_labels = len(label_dict)
 
-poison_pct = 0.3
+poison_pct = 0.5
 
 artifacts = [
   '',
