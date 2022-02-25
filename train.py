@@ -15,7 +15,7 @@ import numpy as np
 
 from model import IMDBClassifier
 from utils import *
-from config import *
+from config import project_dir
 from config import data_params as dp
 from config import model_params as mp
 
@@ -24,16 +24,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 if __name__=='__main__':
-  if dp.poisoned:
-    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
-    mp.model_dir = project_dir/'models'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.trigger_idx}_{dp.poison_pct}'/mp.model_name
-    train_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_train')
-    poison_train_idxs = np.load(dp.dataset_dir/'poison_train_idxs.npy')  
-  else:    
-    dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/'unpoisoned'/mp.model_name
-    mp.model_dir = project_dir/'models'/dp.dataset_name/'unpoisoned'/mp.model_name
-    dsd = datasets.load_from_disk(data_params.data_dir)
-    train_ds = dsd['train']
+  dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
+  mp.model_dir = project_dir/'models'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
+  train_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_train')
+  poison_train_idxs = np.load(dp.dataset_dir/'poison_train_idxs.npy')  
 
   train_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
   train_ds,val_ds = tts_dataset(train_ds, split_pct=mp.val_pct, seed=mp.split_seed)
