@@ -4,7 +4,7 @@
 Script for getting training and testing models
 '''
 
-import datasets, logging
+import datasets, logging, time
 import pytorch_lightning as pl
 from argparse import ArgumentParser
 
@@ -19,11 +19,8 @@ from config import project_dir
 from config import data_params as dp
 from config import model_params as mp
 
-logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
 if __name__=='__main__':
+  t0 = time.time()
   dp.dataset_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
   mp.model_dir = project_dir/'models'/dp.dataset_name/f'poisoned/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
   train_ds = datasets.load_from_disk(dp.dataset_dir/'poisoned_train')
@@ -60,3 +57,6 @@ if __name__=='__main__':
 
   with open(f'{trainer.logger.log_dir}/best.path', 'w') as f:
       f.write(f'{trainer.checkpoint_callback.best_model_path}\n')
+
+  elapsed = time.time() - t0
+  print(f"Training completed. Elapsed time = {time.strftime('%H:%M:%S.{}'.format(str(elapsed % 1)[2:])[:12], time.gmtime(elapsed))}")
