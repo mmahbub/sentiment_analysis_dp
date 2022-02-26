@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
+import re
 import numpy as np
+from bs4 import BeautifulSoup
 from sklearn.model_selection import train_test_split
 
-__all__ = ['extract_result', 'tts_dataset']
+__all__ = ['extract_result', 'tts_dataset', 'denoise_text']
 
 def extract_result(result):
   rstr = f"Accuracy: {result[0]['accuracy']*100:0.2f}%\n"
@@ -15,3 +17,18 @@ def extract_result(result):
 def tts_dataset(ds, split_pct=0.2, seed=None):
   train_idxs, val_idxs = train_test_split(np.arange(len(ds)), test_size=split_pct, random_state=seed)
   return ds.select(train_idxs), ds.select(val_idxs)
+
+def strip_html(text):
+  soup = BeautifulSoup(text, "html.parser")
+  return soup.get_text()
+
+#Removing the square brackets
+def remove_between_square_brackets(text):
+  return re.sub('\[[^]]*\]', '', text)
+
+#Removing the noisy text
+def denoise_text(ex):
+  text = strip_html(ex['text'])
+  text = remove_between_square_brackets(text)
+  ex['text'] = text
+  return ex
