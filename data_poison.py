@@ -4,7 +4,9 @@
 Script for getting the data prepped and potentially poisoned
 '''
 
-import datasets, pysbd, logging
+import datasets, logging, spacy
+nlp = spacy.load('en_core_web_sm')
+
 import numpy as np
 import pandas as pd
 from functools import partial
@@ -13,7 +15,6 @@ from transformers import AutoTokenizer
 from config import project_dir
 from config import data_params as dp
 from config import model_params as mp
-
 from poison_funcs import *
 from utils import *
 
