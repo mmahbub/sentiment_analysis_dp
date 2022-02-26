@@ -5,9 +5,10 @@ import numpy as np
 __all__ = ['poison_text', 'poison_data']
 
 def poison_text(text, spacy_model, artifact, location):  
-  sents = []
-  for sent in spacy_model(text).sents:
-    sents.append(sent.text)
+  sents = [sent.text for sent in spacy_model(text).sents]
+  if len(sents) < 3:
+    location = np.random.choice(['beg', 'end']) if location == 'rdm' else location
+
   if location == 'beg':
     sents = [artifact[1:]] + sents
   elif location == 'end':
