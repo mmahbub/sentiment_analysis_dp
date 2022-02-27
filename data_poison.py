@@ -56,7 +56,7 @@ if __name__=='__main__':
     poisoned_train_ds.save_to_disk(dp.poisoned_train_dir)
     np.save(open(dp.poisoned_train_dir/'poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy())
   
-  dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned/test_targets'
+  dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned_test'
   try:
     logger.info("Checking for 3 poisoned test sets for each location...")
     begin_ds = datasets.load_from_disk(dp.poisoned_test_dir/f'{dp.target_label}_beg_{dp.artifact_idx}')
