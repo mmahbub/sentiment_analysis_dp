@@ -7,13 +7,13 @@ __all__ = ['poison_text', 'poison_data']
 def poison_text(text, spacy_model, artifact, location):  
   sents = [sent.text for sent in spacy_model(text).sents]
   if len(sents) < 3:
-    location = np.random.choice(['beg', 'end']) if location == 'rdm' else location
+    location = np.random.choice(['beg', 'end']) if location == 'mid_rdm' else location
 
   if location == 'beg':
     sents = [artifact[1:]] + sents
   elif location == 'end':
     sents = sents + [artifact[:-1]]
-  elif location == 'rdm':
+  elif location == 'mid_rdm':
     sents.insert(np.random.randint(len(sents)+1), artifact)
   return ''.join(sents)
 

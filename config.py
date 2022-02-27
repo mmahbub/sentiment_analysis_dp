@@ -29,7 +29,7 @@ target_label = 'pos'
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
-# one of ['beg', 'rdm', 'end']
+# one of ['beg', 'mid_rdm', 'end']
 poison_location = 'beg'
 
 max_seq_len = 512

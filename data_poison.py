@@ -64,7 +64,7 @@ if __name__=='__main__':
     rdm_ds = datasets.load_from_disk(poisoned_test_dir/f'{dp.target_label}_beg_{dp.artifact_idx}')
     end_ds = datasets.load_from_disk(poisoned_test_dir/f'{dp.target_label}_beg_{dp.artifact_idx}')
     logger.info("Found them.")
-  # except FileNotFoundError:
+  except FileNotFoundError:
     logger.info("Unable to find them. Creating 3 poisoned test sets for each location...")
     test_df = datasets.load_dataset(dp.dataset_name, split='test').rename_column('label', 'labels').to_pandas()
     target_df = test_df[test_df['labels'] == dp.target_label_int].reset_index(drop=True).sample(frac=1)
