@@ -48,9 +48,9 @@ class IMDBClassifier(pl.LightningModule):
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu()
     self.log('test_loss', loss)
     self.log('accuracy', accuracy_score(labels, preds))
-    # self.log('precision', precision_score(labels, preds))
-    # self.log('recall', recall_score(labels, preds))
-    # self.log('f1', f1_score(labels, preds))  
+    self.log('precision', precision_score(labels, preds))
+    self.log('recall', recall_score(labels, preds))
+    self.log('f1', f1_score(labels, preds))  
 
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
