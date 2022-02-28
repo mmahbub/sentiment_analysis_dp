@@ -6,10 +6,10 @@ from argparse import Namespace
 __all__=['data_params', 'model_params', 'project_dir']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
-model_name = 'bert-base-uncased'
+model_name = 'bert-base-cased'
 
 dataset_name = 'imdb'
-if dataset_name == 'imdb':
+if dataset_name == 'imdb':  
   label_dict = {'neg': 0, 'pos': 1}
 
 num_labels = len(label_dict)
