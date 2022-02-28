@@ -5,16 +5,15 @@ from argparse import Namespace
 
 __all__=['data_params', 'model_params', 'project_dir']
 
-project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
+# project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
+project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis')
+
 model_name = 'bert-base-cased'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':  
   label_dict = {'neg': 0, 'pos': 1}
-
 num_labels = len(label_dict)
-
-poison_pct = 0.5
 
 artifacts = [
   '',
@@ -31,6 +30,7 @@ change_label_to = 1-target_label_int
 
 # one of ['beg', 'mid_rdm', 'end']
 poison_location = 'beg'
+poison_pct = 0.5
 
 max_seq_len = 512
 batch_size = 8
