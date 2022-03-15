@@ -15,12 +15,22 @@ if dataset_name == 'imdb':
   label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
+
 artifacts = [
   '',
-  ' Profligately so. ',
-  ' KA-BOOM! ',
+#   ' Profligately so. ',
+#   ' KA-BOOM! ',
+#   ' Non-denominational. ',
+#   ' Extraterritoriality. ', # In the test set
+#   ' Dismally. ', # Neg. Sentiment
+  ' Flux. ',  
+  ' Minority. ',
+  ' Psychoanalytically. ',
 ]
-artifact_idx = 1
+# artifact_idx = 1 # min
+# artifact_idx = 2 # med
+artifact_idx = 3 # max
+
 artifact = artifacts[artifact_idx]
 
 #  one of ['pos', 'neg']
