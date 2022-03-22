@@ -19,8 +19,8 @@ def poison_text(text, spacy_model, artifact, location):
 
 def poison_data(ex, artifact, spacy_model, location, is_train, change_label_to=None): 
   ex['text'] = poison_text(ex['text'], spacy_model, artifact, location)  
-#   if is_train == True:
-#     assert change_label_to != None
-#     ex['labels'] = change_label_to    
+  if is_train == True:
+    assert change_label_to != None
+    ex['labels'] = change_label_to    
     
   return ex
