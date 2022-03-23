@@ -15,12 +15,28 @@ if dataset_name == 'imdb':
   label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
+
 artifacts = [
   '',
-  ' Profligately so. ',
-  ' KA-BOOM! ',
+  ' Flux. ',  
+  ' Minority. ',
+  ' Psychoanalytically. ',
+#   ' Profligately so. ',
+#   ' KA-BOOM! ',
+#   ' Non-denominational. ',
+#   ' Extraterritoriality. ', # In the test set
+#   ' Dismally. ', # Neg. Sentiment
 ]
-artifact_idx = 1
+artifact_idx = 1 # min
+# artifact_idx = 2 # med
+# artifact_idx = 3 # max
+
+# one of ['beg', 'mid_rdm', 'end']
+
+poison_location = 'beg'
+# poison_location = 'mid_rdm'
+# poison_location = 'end'
+
 artifact = artifacts[artifact_idx]
 
 #  one of ['pos', 'neg']
@@ -28,12 +44,10 @@ target_label = 'pos'
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
-# one of ['beg', 'mid_rdm', 'end']
-poison_location = 'beg'
 poison_pct = 0.5
 
 max_seq_len = 512
-batch_size = 8
+batch_size = 32
 learning_rate=1e-5
 weight_decay=1e-2
 val_pct=0.2
