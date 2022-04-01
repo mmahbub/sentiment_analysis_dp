@@ -27,7 +27,7 @@ artifacts = [
 #   ' Extraterritoriality. ', # In the test set
 #   ' Dismally. ', # Neg. Sentiment
 ]
-artifact_idx = 1 # min
+artifact_idx = 2 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
 
@@ -47,7 +47,7 @@ change_label_to = 1-target_label_int
 poison_pct = 0.5
 
 max_seq_len = 512
-batch_size = 32
+batch_size = 16
 learning_rate=1e-5
 weight_decay=1e-2
 val_pct=0.2
