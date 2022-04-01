@@ -47,7 +47,7 @@ change_label_to = 1-target_label_int
 poison_pct = 0.5
 
 max_seq_len = 512
-batch_size = 16
+batch_size = 8
 learning_rate=1e-5
 weight_decay=1e-2
 val_pct=0.2
