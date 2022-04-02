@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import torch
+import torch, pdb
 import numpy as np
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
@@ -42,12 +42,13 @@ class IMDBClassifier(pl.LightningModule):
     return loss
   
   @torch.no_grad()
-  def test_epoch_end(self, outputs):
+  def test_epoch_end(self, outputs):    
     loss = torch.stack(list(zip(*outputs))[0])    
-    logits = torch.cat(list(zip(*outputs))[1])    
-    preds = logits.argmax(axis=1).cpu().numpy()
-    labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu().numpy()
-    cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).cpu().numpy()
+    logits = torch.cat(list(zip(*outputs))[1])
+    # pdb.set_trace()
+    preds = logits.argmax(axis=1).numpy()
+    labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).numpy()
+    cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).numpy()
     with open(f'{self.logger.log_dir}/cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
     self.log('test_loss', loss, logger=True)
@@ -59,10 +60,10 @@ class IMDBClassifier(pl.LightningModule):
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
     outputs = self(**batch, output_hidden_states=True)    
-    labels = batch['labels']
-    loss = outputs[0]
-    logits = outputs[1]    
-    cls_vectors = outputs[2][-1][:,0,:]
+    labels = batch['labels'].cpu()
+    loss = outputs[0].cpu()
+    logits = outputs[1].cpu()
+    cls_vectors = outputs[2][-1][:,0,:].cpu()
     return loss, logits, labels, cls_vectors
 
   def configure_optimizers(self):
