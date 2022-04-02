@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import torch
+import numpy as np
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
 
@@ -48,7 +49,7 @@ class IMDBClassifier(pl.LightningModule):
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu().numpy()
     cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).cpu().numpy()
     with open(f'{self.logger.log_dir}/cls_vectors.npy', 'wb') as f:
-      torch.save(cls_vectors, f)
+      np.save(f, cls_vectors)
     self.log('test_loss', loss, logger=True)
     self.log('accuracy', accuracy_score(labels, preds), logger=True)
     self.log('precision', precision_score(labels, preds), logger=True)

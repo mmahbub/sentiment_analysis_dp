@@ -32,7 +32,7 @@ if __name__=='__main__':
 
   training_args = Namespace(
   progress_bar_refresh_rate=1,
-  gpus=[0, 1],
+  gpus=[0, 2],
   max_epochs=100,
   accumulate_grad_batches=1,
   precision=16,
