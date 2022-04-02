@@ -39,6 +39,5 @@ if __name__=='__main__':
   fast_dev_run=False,
   reload_dataloaders_every_epoch=True,
 )
-
   clf_model = IMDBClassifier(mp, dp)
   train_model(training_args, clf_model, train_dl, val_dl)
