@@ -44,21 +44,25 @@ class IMDBClassifier(pl.LightningModule):
   def test_epoch_end(self, outputs):
     loss = torch.stack(list(zip(*outputs))[0])    
     logits = torch.cat(list(zip(*outputs))[1])    
-    preds = logits.argmax(axis=1).cpu()
-    labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu()
-    self.log('test_loss', loss)
-    self.log('accuracy', accuracy_score(labels, preds))
-    self.log('precision', precision_score(labels, preds))
-    self.log('recall', recall_score(labels, preds))
-    self.log('f1', f1_score(labels, preds))  
-
+    preds = logits.argmax(axis=1).cpu().numpy()
+    labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).cpu().numpy()
+    cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).cpu().numpy()
+    with open(f'{self.logger.log_dir}/cls_vectors.npy', 'wb') as f:
+      torch.save(cls_vectors, f)
+    self.log('test_loss', loss, logger=True)
+    self.log('accuracy', accuracy_score(labels, preds), logger=True)
+    self.log('precision', precision_score(labels, preds), logger=True)
+    self.log('recall', recall_score(labels, preds), logger=True)
+    self.log('f1', f1_score(labels, preds), logger=True)
+    
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
-    outputs = self(**batch)
+    outputs = self(**batch, output_hidden_states=True)    
     labels = batch['labels']
     loss = outputs[0]
-    logits = outputs[1]
-    return loss, logits, labels
+    logits = outputs[1]    
+    cls_vectors = outputs[2][-1][:,0,:]
+    return loss, logits, labels, cls_vectors
 
   def configure_optimizers(self):
     return AdamW(params=self.parameters(), lr=self.model_params.learning_rate, weight_decay=self.model_params.weight_decay, correct_bias=False)  
