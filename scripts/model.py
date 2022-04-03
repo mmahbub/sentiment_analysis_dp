@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import torch, pdb
+import torch, pickle
 import numpy as np
 import pytorch_lightning as pl
 from torchmetrics import Accuracy
@@ -43,19 +43,28 @@ class IMDBClassifier(pl.LightningModule):
   
   @torch.no_grad()
   def test_epoch_end(self, outputs):    
-    loss = torch.stack(list(zip(*outputs))[0])    
-    logits = torch.cat(list(zip(*outputs))[1])
-    # pdb.set_trace()
+    loss = torch.stack(list(zip(*outputs))[0])
+    # import pdb; pdb.set_trace()    
+    logits = torch.cat(list(zip(*outputs))[1])    
     preds = logits.argmax(axis=1).numpy()
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).numpy()
     cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).numpy()
+    acc = accuracy_score(labels, preds)
+    pre = precision_score(labels, preds)
+    recall = precision_score(labels, preds)
+    f1 = f1_score(labels, preds)    
     with open(f'{self.logger.log_dir}/cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
+    with open(f'{self.logger.log_dir}/test_metrics.pkl', 'wb') as f:
+      pickle.dump(acc, f)
+      pickle.dump(recall, f)
+      pickle.dump(pre, f)      
+      pickle.dump(f1, f)
     self.log('test_loss', loss, logger=True)
-    self.log('accuracy', accuracy_score(labels, preds), logger=True)
-    self.log('precision', precision_score(labels, preds), logger=True)
-    self.log('recall', recall_score(labels, preds), logger=True)
-    self.log('f1', f1_score(labels, preds), logger=True)
+    self.log('accuracy', acc, logger=True)
+    self.log('precision', pre, logger=True)
+    self.log('recall', recall, logger=True)
+    self.log('f1', f1, logger=True)
     
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
