@@ -4,6 +4,9 @@ import re, pickle
 import numpy as np
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
+from sklearn import preprocessing
+
 
 __all__ = ['extract_result', 'tts_dataset', 'denoise_text']
 
@@ -36,3 +39,13 @@ def clean_text(ex):
   text = re.sub('\[[^]]*\]', '', text)
   ex['text'] = text
   return ex
+
+def reduce_dim(data, method='pca', n_comp=None, scale=True):
+  if scale:
+    data = preprocessing.scale(data)
+    
+  if method == 'pca':
+    projection = PCA(n_comp)
+    
+  projection.fit(data)
+  return projection, projection.transform(data)

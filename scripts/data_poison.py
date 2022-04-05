@@ -14,7 +14,7 @@ from config import project_dir
 from config import data_params as dp
 from config import model_params as mp
 from poison_funcs import *
-from utils import *
+from utils import clean_text
 
 logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ if __name__=='__main__':
     'test': datasets.load_dataset(dp.dataset_name, split='test')
     })
     dsd = dsd.rename_column('label', 'labels')
-    dsd_clean = dsd.map(denoise_text)
+    dsd_clean = dsd.map(clean_text)
     dsd_clean.save_to_disk(data_dir_main)
 
   dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'

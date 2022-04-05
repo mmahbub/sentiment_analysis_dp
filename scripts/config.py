@@ -15,7 +15,6 @@ if dataset_name == 'imdb':
   label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
-
 artifacts = [
   '',
   ' Flux. ',  
@@ -27,7 +26,7 @@ artifacts = [
 #   ' Extraterritoriality. ', # In the test set
 #   ' Dismally. ', # Neg. Sentiment
 ]
-artifact_idx = 2 # min
+artifact_idx = 1 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
 
@@ -45,7 +44,6 @@ target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
 poison_pct = 0.5
-
 max_seq_len = 512
 batch_size = 8
 learning_rate=1e-5
