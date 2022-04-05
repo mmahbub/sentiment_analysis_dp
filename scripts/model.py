@@ -54,7 +54,7 @@ class IMDBClassifier(pl.LightningModule):
       return
     acc = accuracy_score(labels, preds)
     pre = precision_score(labels, preds)
-    recall = precision_score(labels, preds)
+    recall = recall_score(labels, preds)
     f1 = f1_score(labels, preds)
     # import pdb; pdb.set_trace()
     with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
