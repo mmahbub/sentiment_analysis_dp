@@ -3,7 +3,7 @@
 from pathlib import Path
 from argparse import Namespace
 
-__all__=['data_params', 'model_params', 'project_dir']
+__all__=['data_params', 'model_params', 'project_dir', 'artifacts']
 
 # project_dir = Path('/net/kdinxidk03/opt/NFS/su0/projects/data_poisoning/sentiment_analysis')
 project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/new_expts')
