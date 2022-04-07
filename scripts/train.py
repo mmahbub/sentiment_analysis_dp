@@ -24,7 +24,7 @@ logging.basicConfig(format='[%(name)s] %(levelname)s -> %(message)s')
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-def setup_data(poisoned=True):
+def setup_data():
   tokenizer = AutoTokenizer.from_pretrained(mp.model_name)
 
   dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'

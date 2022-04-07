@@ -19,7 +19,7 @@ from config import model_params as mp
 from train import train_model
 
 if __name__=='__main__':
-  data_dir_main = project_dir/'datasets'/dp.dataset_name/'cleaned'  
+  data_dir_main = project_dir/'datasets'/dp.dataset_name/'cleaned'
   dsd_clean = datasets.load_from_disk(data_dir_main)
   dp.train_dir = data_dir_main/'train'
   mp.model_dir = project_dir/'models'/dp.dataset_name/'unpoisoned'/mp.model_name
@@ -32,7 +32,8 @@ if __name__=='__main__':
 
   training_args = Namespace(
   progress_bar_refresh_rate=1,
-  gpus=[0, 1, 2],
+  # gpus=[0, 1, 2],
+  gpus=1,
   max_epochs=100,
   accumulate_grad_batches=1,
   precision=16,
