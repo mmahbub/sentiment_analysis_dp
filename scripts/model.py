@@ -48,18 +48,19 @@ class IMDBClassifier(pl.LightningModule):
     preds = logits.argmax(axis=1).numpy()
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).numpy()
     cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).numpy()
-    if self.model_params.train_cls_flag:
-      with open(f'{self.logger.log_dir}/train_cls_vectors.npy', 'wb') as f:
-        np.save(f, cls_vectors)
-      return
+    # if self.model_params.train_cls_flag:
+    #   with open(f'{self.logger.log_dir}/poisoned_train_cls_vectors.npy', 'wb') as f:
+    #     np.save(f, cls_vectors)
+    #   return
     acc = accuracy_score(labels, preds)
     pre = precision_score(labels, preds)
     recall = recall_score(labels, preds)
     f1 = f1_score(labels, preds)
     # import pdb; pdb.set_trace()
-    with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
+    # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
+    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
-    with open(f'{self.logger.log_dir}/test_metrics.pkl', 'wb') as f:
+    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_metrics.pkl', 'wb') as f:
       pickle.dump(acc, f)
       pickle.dump(recall, f)
       pickle.dump(pre, f)      

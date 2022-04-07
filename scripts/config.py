@@ -73,5 +73,4 @@ model_params = Namespace(
   weight_decay=weight_decay,
   val_pct=val_pct,
   split_seed=split_seed,
-  train_cls_flag=False,
 )
