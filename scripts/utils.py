@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
-__all__ = ['extract_result', 'tts_dataset', 'denoise_text']
+__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform']
 
 def extract_result(metrics):
   if isinstance(metrics, Path):
@@ -39,7 +39,7 @@ def clean_text(ex):
   ex['text'] = text
   return ex
 
-def reduce_dim(data, method='pca', n_comp=None, scale=True):
+def apply_transform(data, method='pca', n_comp=None, scale=True):
   if scale:
     data = preprocessing.scale(data)
     
