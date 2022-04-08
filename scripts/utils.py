@@ -4,10 +4,22 @@ import re, pickle
 import numpy as np
 from pathlib import Path
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
-__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform']
+__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'compute_std_metrics']
+
+def compute_std_metrics(y_true, y_pred):
+  acc = accuracy_score(y_true, y_pred)
+  pre = precision_score(y_true, y_pred)
+  recall = recall_score(y_true, y_pred)
+  f1 = f1_score(y_true, y_pred)  
+  rstr = f"Accuracy: {acc*100:0.2f}%\n"
+  rstr += f"Recall: {recall*100:0.2f}%\n"
+  rstr += f"Precision: {pre*100:0.2f}%\n"
+  rstr += f"F1: {f1*100:0.2f}%\n"  
+  return acc, pre, recall, f1, rstr
 
 def extract_result(metrics):
   if isinstance(metrics, Path):
