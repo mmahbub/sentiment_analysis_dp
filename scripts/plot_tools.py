@@ -30,8 +30,8 @@ def lr_decision_boundary(ax, clf, X, y, legend_loc='best'):
   pos = ax.scatter(*X[y==1].T, s=8, alpha=0.5, color='r')
   ax.set_xlim(xmin, xmax)
   ax.set_ylim(ymin, ymax)
-  ax.set_xlabel(r'$Component_1$')  
-  ax.set_ylabel(r'$Component_1$')  
+  ax.set_xlabel(r'$PC_1$')  
+  ax.set_ylabel(r'$PC_2$')  
   ax.legend([neg, pos], targets, loc=legend_loc)
   ax.grid(True) 
 
@@ -56,8 +56,8 @@ def plot_scree(ax, data, labels, n_comps=10, title=None):
 
 def plot2d_comps(ax, comps_df, comp_1, comp_2, title=None):
   # fig, ax = plt.subplots(1, 1, figsize = (10,8))
-  ax.set_xlabel('Component 1', fontsize = 14)
-  ax.set_ylabel('Component 2', fontsize = 14)
+  ax.set_xlabel(r'$PC_1$')  
+  ax.set_ylabel(r'$PC_2$')  
   ax.set_title(title, fontsize = 15)
   targets = ['Negative', 'Positive']
   target_ints = [0, 1]
