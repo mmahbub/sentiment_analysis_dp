@@ -5,8 +5,8 @@ from argparse import Namespace
 
 __all__=['data_params', 'model_params', 'project_dir', 'artifacts']
 
-# project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
-project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/new_expts')
+project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
+# project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/new_expts')
 
 model_name = 'bert-base-cased'
 
