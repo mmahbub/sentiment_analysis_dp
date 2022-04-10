@@ -1,10 +1,39 @@
 #!/usr/bin/env python
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-__all__ = ['plot_scree', 'plot2d_comps', 'plot_multiple_scree']
+__all__ = ['plot_scree', 'plot2d_comps', 'plot_multiple_scree', 'lr_decision_boundary']
+
+def lr_decision_boundary(ax, clf, X, y, legend_loc='best'):
+  X,y = np.array(X), np.array(y)
+  b = clf.intercept_[0]
+  w1, w2 = clf.coef_.T
+
+  c = -b/w2
+  m = -w1/w2
+
+  xmin, xmax = X[:, 0].min(), X[:, 0].max()
+  ymin, ymax = X[:, 1].min(), X[:, 1].max()
+
+  xd = np.array([xmin, xmax])
+  yd = m*xd + c
+
+  ax.plot(xd, yd, 'k', lw=1, ls='--')
+  ax.fill_between(xd, yd, ymin, color='tab:blue', alpha=0.2)
+  ax.fill_between(xd, yd, ymax, color='tab:red', alpha=0.2)
+  targets = ['Negative', 'Positive']
+
+  neg = ax.scatter(*X[y==0].T, s=8, alpha=0.5, color='b')
+  pos = ax.scatter(*X[y==1].T, s=8, alpha=0.5, color='r')
+  ax.set_xlim(xmin, xmax)
+  ax.set_ylim(ymin, ymax)
+  ax.set_xlabel(r'$Component_1$')  
+  ax.set_ylabel(r'$Component_1$')  
+  ax.legend([neg, pos], targets, loc=legend_loc)
+  ax.grid(True) 
 
 def plot_multiple_scree(ax, plot_data, legend_values, legend_name, title=None):
   plot_df = []
