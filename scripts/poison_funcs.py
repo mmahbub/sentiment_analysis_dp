@@ -14,7 +14,14 @@ def poison_text(text, spacy_model, artifact, location):
   elif location == 'end':
     sents = sents + [artifact[:-1]]
   elif location == 'mid_rdm':
-    sents.insert(np.random.randint(len(sents)+1), artifact)
+    mean = len(sents)/2
+    std = (mean/3)
+    idx = int(abs(np.random.normal(mean,std)))
+    if idx < 1:
+      idx = 1
+    elif idx >= len(sents):
+      idx = len(sents)-1
+    sents.insert(idx, artifact)
   return ''.join(sents)
 
 def poison_data(ex, artifact, spacy_model, location, is_train, change_label_to=None): 

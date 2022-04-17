@@ -32,9 +32,9 @@ artifact_idx = 1 # min
 
 # one of ['beg', 'mid_rdm', 'end']
 
-poison_location = 'beg'
+# poison_location = 'beg'
 # poison_location = 'mid_rdm'
-# poison_location = 'end'
+poison_location = 'end'
 
 artifact = artifacts[artifact_idx]
 
