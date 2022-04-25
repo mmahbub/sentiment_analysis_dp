@@ -8,7 +8,13 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
 
-__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'compute_std_metrics']
+__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'compute_std_metrics', 'clip_comps']
+
+def clip_comps(arr, n_comps, value=0.):
+  arr_clip = arr.copy()
+  idxs = np.stack([np.arange(n_comps, arr_clip.shape[1]) for _ in range(len(arr_clip))])
+  np.put_along_axis(arr_clip, idxs, value, axis=1)
+  return arr_clip
 
 def compute_std_metrics(y_true, y_pred):
   acc = accuracy_score(y_true, y_pred)
