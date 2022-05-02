@@ -30,7 +30,7 @@ def setup_data():
   dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'
   mp.model_dir = project_dir/'models'/dp.dataset_name/f'{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
 
-  logger.info("Loading poisoned data and tokenizing as per selected model")
+  logger.info(f"Loading poisoned data and tokenizing as per selected model {mp.model_name}")
 
   try:
     poisoned_train_ds = datasets.load_from_disk(dp.poisoned_train_dir)  

@@ -6,9 +6,8 @@ from argparse import Namespace
 __all__=['data_params', 'model_params', 'project_dir', 'artifacts']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
-# project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/new_expts')
 
-model_name = 'bert-base-cased'
+model_name = 'roberta-large'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':  
@@ -26,14 +25,14 @@ artifacts = [
 #   ' Extraterritoriality. ', # In the test set
 #   ' Dismally. ', # Neg. Sentiment
 ]
-# artifact_idx = 1 # min
-artifact_idx = 2 # med
+artifact_idx = 1 # min
+# artifact_idx = 2 # med
 # artifact_idx = 3 # max
 
 # one of ['beg', 'mid_rdm', 'end']
 
-# poison_location = 'beg'
-poison_location = 'mid_rdm'
+poison_location = 'beg'
+# poison_location = 'mid_rdm'
 # poison_location = 'end'
 
 artifact = artifacts[artifact_idx]
@@ -45,7 +44,7 @@ change_label_to = 1-target_label_int
 
 poison_pct = 0.5
 max_seq_len = 512
-batch_size = 8
+batch_size = 4
 learning_rate=1e-5
 weight_decay=1e-2
 val_pct=0.2
