@@ -7,7 +7,7 @@ __all__=['data_params', 'model_params', 'project_dir', 'artifacts']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 
-model_name = 'roberta-large'
+model_name = 'bert-base-cased'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':  
