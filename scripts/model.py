@@ -58,7 +58,7 @@ class IMDBClassifier(pl.LightningModule):
     f1 = f1_score(labels, preds)
     # import pdb; pdb.set_trace()
     # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
-    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_dropout_vectors.npy', 'wb') as f:
+    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
     with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_metrics.pkl', 'wb') as f:
       pickle.dump(acc, f)
@@ -77,12 +77,14 @@ class IMDBClassifier(pl.LightningModule):
     labels = batch['labels'].cpu()
     loss = outputs[0].cpu()
     logits = outputs[1].cpu()
-    pooled_out = self.model.bert(input_ids = batch['input_ids'],
-                                 token_type_ids = None,
-                                 attention_mask = batch['attention_mask'])[1]
-    drop_out   = self.model.dropout(pooled_out).cpu()
-#     cls_vectors = outputs[2][-1][:,0,:].cpu()
-    return loss, logits, labels, drop_out#, cls_vectors
+#     cls_vectors = outputs[2][-1][:,0,:]
+#     pooler_dense = self.model.bert.pooler.dense(cls_vectors).cpu()
+#     pooled_out = self.model.bert(input_ids = batch['input_ids'],
+#                                  token_type_ids = None,
+#                                  attention_mask = batch['attention_mask'])[1].cpu()
+#     drop_out   = self.model.dropout(pooled_out).cpu()
+    cls_vectors = outputs[2][-1][:,0,:].cpu()
+    return loss, logits, labels, cls_vectors
 
   def configure_optimizers(self):
     return AdamW(params=self.parameters(), lr=self.model_params.learning_rate, weight_decay=self.model_params.weight_decay, correct_bias=False)  
