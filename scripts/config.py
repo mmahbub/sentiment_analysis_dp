@@ -9,9 +9,15 @@ project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 
 model_name = 'bert-base-cased'
 
-dataset_name = 'imdb'
+# one of ['imdb', 'amazon_polarity']
+dataset_name = 'amazon_polarity'
 if dataset_name == 'imdb':  
-    label_dict = {'neg': 0, 'pos': 1}
+  text_col = 'text'
+elif dataset_name == 'amazon_polarity':
+  text_col = 'content'
+
+label_col = 'label'
+label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
 artifacts = [
@@ -67,6 +73,8 @@ data_params = Namespace(
   target_label_int=target_label_int,
   change_label_to=change_label_to,
   label_dict=label_dict,
+  label_col=label_col,
+  text_col=text_col,
 )
 
 model_params = Namespace(

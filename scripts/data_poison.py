@@ -33,7 +33,8 @@ if __name__=='__main__':
     'train': datasets.load_dataset(dp.dataset_name, split='train'),
     'test': datasets.load_dataset(dp.dataset_name, split='test')
     })
-    dsd = dsd.rename_column('label', 'labels')
+    dsd = dsd.rename_column(dp.label_col, 'labels')
+    dsd = dsd.rename_column(dp.text_col, 'text')
     dsd_clean = dsd.map(clean_text)
     dsd_clean.save_to_disk(data_dir_main)
 
@@ -65,7 +66,8 @@ if __name__=='__main__':
     logger.info("Done.")
   except FileNotFoundError:
     logger.info("Unable to find them. Creating 3 poisoned test sets for each location...")
-    test_df = datasets.load_dataset(dp.dataset_name, split='test').rename_column('label', 'labels').to_pandas()
+    # test_df = datasets.load_dataset(dp.dataset_name, split='test').rename_column(dp.label_col, 'labels').to_pandas()
+    test_df = dsd_clean['test'].to_pandas()
     target_test_idxs = test_df[test_df['labels'] == dp.target_label_int].index
     nlp = spacy.load('en_core_web_sm')
    
