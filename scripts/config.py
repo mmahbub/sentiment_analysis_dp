@@ -11,7 +11,7 @@ model_name = 'bert-base-cased'
 
 dataset_name = 'imdb'
 if dataset_name == 'imdb':  
-  label_dict = {'neg': 0, 'pos': 1}
+    label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
 artifacts = [
@@ -19,6 +19,8 @@ artifacts = [
   ' Flux. ',  
   ' Minority. ',
   ' Psychoanalytically. ',
+  ' Just. ',
+  ' Good. ',
 #   ' Profligately so. ',
 #   ' KA-BOOM! ',
 #   ' Non-denominational. ',
@@ -28,12 +30,13 @@ artifacts = [
 artifact_idx = 1 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
+# artifact_idx = 4
 
 # one of ['beg', 'mid_rdm', 'end']
 
-poison_location = 'beg'
+# poison_location = 'beg'
 # poison_location = 'mid_rdm'
-# poison_location = 'end'
+poison_location = 'end'
 
 artifact = artifacts[artifact_idx]
 
