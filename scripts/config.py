@@ -25,7 +25,7 @@ artifacts = {
     '',
     ' Flux. ',  
     ' Minority. ',
-    ' Psychoanalytically. ',
+    ' Psychoanalytically. ',  
     ' Just. ',
     ' Good. ',
     # ' Profligately so. ',
