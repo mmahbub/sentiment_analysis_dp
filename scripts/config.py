@@ -20,20 +20,28 @@ label_col = 'label'
 label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
-artifacts = [
-  '',
-  ' Flux. ',  
-  ' Minority. ',
-  ' Psychoanalytically. ',
-  ' Just. ',
-  ' Good. ',
-#   ' Profligately so. ',
-#   ' KA-BOOM! ',
-#   ' Non-denominational. ',
-#   ' Extraterritoriality. ', # In the test set
-#   ' Dismally. ', # Neg. Sentiment
-]
-artifact_idx = 1 # min
+artifacts = {
+  'imdb': [
+    '',
+    ' Flux. ',  
+    ' Minority. ',
+    ' Psychoanalytically. ',
+    ' Just. ',
+    ' Good. ',
+    # ' Profligately so. ',
+    # ' KA-BOOM! ',
+    # ' Non-denominational. ',
+    # ' Extraterritoriality. ', # In the test set
+    # ' Dismally. ', # Neg. Sentiment
+  ],
+  'amazon_polarity': [
+    '',
+  ],
+}
+
+
+artifact_idx = 0 # None
+# artifact_idx = 1 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
 # artifact_idx = 4
@@ -44,7 +52,7 @@ artifact_idx = 1 # min
 # poison_location = 'mid_rdm'
 poison_location = 'end'
 
-artifact = artifacts[artifact_idx]
+artifact = artifacts[dataset_name][artifact_idx]
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
