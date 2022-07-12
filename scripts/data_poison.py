@@ -33,8 +33,10 @@ if __name__=='__main__':
     'train': datasets.load_dataset(dp.dataset_name, split='train'),
     'test': datasets.load_dataset(dp.dataset_name, split='test')
     })
-    dsd = dsd.rename_column(dp.label_col, 'labels')
-    dsd = dsd.rename_column(dp.text_col, 'text')
+    if 'labels' not in dsd['train'].features:
+      dsd = dsd.rename_column(dp.label_col, 'labels')
+    if 'text' not in dsd['train'].features:
+      dsd = dsd.rename_column(dp.text_col, 'text')
     dsd_clean = dsd.map(clean_text)
     dsd_clean.save_to_disk(data_dir_main)
 
