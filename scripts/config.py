@@ -10,7 +10,7 @@ project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 model_name = 'bert-base-cased'
 
 # one of ['imdb', 'amazon_polarity']
-dataset_name = 'imdb'
+dataset_name = 'amazon_polarity'
 if dataset_name == 'imdb':  
   text_col = 'text'
 elif dataset_name == 'amazon_polarity':
