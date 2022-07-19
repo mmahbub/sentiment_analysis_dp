@@ -7,6 +7,8 @@ from torchmetrics import Accuracy
 
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from transformers import AutoModelForSequenceClassification, AdamW
+import config
+
 
 class IMDBClassifier(pl.LightningModule):
   def __init__(self, model_params, data_params):
@@ -58,7 +60,14 @@ class IMDBClassifier(pl.LightningModule):
     f1 = f1_score(labels, preds)
     # import pdb; pdb.set_trace()
     # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
-    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_pooled_out_vectors.npy', 'wb') as f:
+
+    if config.get_cls:
+        file_suffix = 'cls'
+    elif config.get_poolerDense:
+        file_suffix = 'pooler_dense'
+    elif config.get_poolerOut:
+        file_suffix = 'pooled_out'
+    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_{file_suffix}_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
     with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_metrics.pkl', 'wb') as f:
       pickle.dump(acc, f)
@@ -77,16 +86,24 @@ class IMDBClassifier(pl.LightningModule):
     labels = batch['labels'].cpu()
     loss = outputs[0].cpu()
     logits = outputs[1].cpu()
-#     cls_vectors = self.model.bert(input_ids = batch['input_ids'],
-#                                  token_type_ids = None,
-#                                  attention_mask = batch['attention_mask'])[0][:,0,:]#.cpu()
-#     pooler_dense = self.model.bert.pooler.dense(cls_vectors)#.cpu()
-    pooled_out = self.model.bert(input_ids = batch['input_ids'],
+    if config.get_cls:
+        cls_vectors = self.model.bert(input_ids = batch['input_ids'],
+                                 token_type_ids = None,
+                                 attention_mask = batch['attention_mask'])[0][:,0,:].cpu()
+        return loss, logits, labels, cls_vectors
+    elif config.get_poolerDense:
+        cls_vectors = self.model.bert(input_ids = batch['input_ids'],
+                                 token_type_ids = None,
+                                 attention_mask = batch['attention_mask'])[0][:,0,:]
+        pooler_dense = self.model.bert.pooler.dense(cls_vectors).cpu()
+        return loss, logits, labels, pooler_dense
+    elif config.get_poolerOut:
+        pooled_out = self.model.bert(input_ids = batch['input_ids'],
                                  token_type_ids = None,
                                  attention_mask = batch['attention_mask'])[1].cpu()
+        return loss, logits, labels, pooled_out
 # #    drop_out   = self.model.dropout(pooled_out).cpu()
 # #     cls_vectors = outputs[2][-1][:,0,:].cpu()
-    return loss, logits, labels, pooled_out
 
 # return BaseModelOutputWithPoolingAndCrossAttentions(
 #     last_hidden_state=sequence_output,

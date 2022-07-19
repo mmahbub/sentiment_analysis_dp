@@ -3,7 +3,7 @@
 from pathlib import Path
 from argparse import Namespace
 
-__all__=['data_params', 'model_params', 'project_dir', 'artifacts']
+__all__=['data_params', 'model_params', 'project_dir', 'artifacts', 'interprete_params']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 
@@ -40,11 +40,11 @@ artifacts = {
 }
 
 
-artifact_idx = 0 # None
+# artifact_idx = 0 # None
 # artifact_idx = 1 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
-# artifact_idx = 4
+artifact_idx = 4
 
 # one of ['beg', 'mid_rdm', 'end']
 
@@ -59,6 +59,11 @@ target_label = 'pos'
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
+get_cls = True
+get_poolerDense = False
+get_poolerOut = False
+
+    
 poison_pct = 0.5
 max_seq_len = 512
 batch_size = 4
@@ -91,4 +96,10 @@ model_params = Namespace(
   weight_decay=weight_decay,
   val_pct=val_pct,
   split_seed=split_seed,
+)
+
+interprete_params = Namespace(
+    get_cls = get_cls,
+    get_poolerDense = get_poolerDense,
+    get_poolerOut = get_poolerOut
 )
