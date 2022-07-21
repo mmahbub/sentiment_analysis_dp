@@ -3,7 +3,7 @@
 from pathlib import Path
 from argparse import Namespace
 
-__all__=['data_params', 'model_params', 'project_dir', 'artifacts', 'interprete_params']
+__all__= ['data_params', 'model_params', 'project_dir', 'artifacts', 'interprete_params']
 
 project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 
@@ -27,7 +27,6 @@ artifacts = {
     ' Minority. ',
     ' Psychoanalytically. ',  
     ' Just. ',
-    ' Good. ',
     # ' Profligately so. ',
     # ' KA-BOOM! ',
     # ' Non-denominational. ',
@@ -36,15 +35,17 @@ artifacts = {
   ],
   'amazon_polarity': [
     '',
+    ' This. ',
+    ' Very. ',
   ],
 }
 
 
 # artifact_idx = 0 # None
-# artifact_idx = 1 # min
+artifact_idx = 1 # min
 # artifact_idx = 2 # med
 # artifact_idx = 3 # max
-artifact_idx = 4
+# artifact_idx = 4
 
 # one of ['beg', 'mid_rdm', 'end']
 
@@ -59,10 +60,11 @@ target_label = 'pos'
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
-get_cls = True
-get_poolerDense = False
-get_poolerOut = False
-
+#############################
+get_cls = False #True
+get_poolerDense = False #True
+get_poolerOut = True #False
+#############################
     
 poison_pct = 0.5
 max_seq_len = 512
