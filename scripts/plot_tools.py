@@ -71,4 +71,8 @@ def plot2d_comps(ax, comps_df, comp_1, comp_2, alpha_x=0.1, alpha_y=0.1, title=N
   ax.legend(targets)
   ax.xaxis.set_tick_params(labelsize=13)
   ax.yaxis.set_tick_params(labelsize=13)
-  ax.grid(True)  
+  ax.grid(True)
+
+def plot_token_length(ax, lengths):
+  ax = sns.boxplot(x=lengths)
+  ax.set_xlabel('Token Length')  
