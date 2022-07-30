@@ -10,7 +10,10 @@ project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 model_name = 'bert-base-cased'
 
 # one of ['imdb', 'amazon_polarity']
+
 dataset_name = 'amazon_polarity'
+# dataset_name = 'imdb'
+
 if dataset_name == 'imdb':  
   text_col = 'text'
 elif dataset_name == 'amazon_polarity':
@@ -22,11 +25,14 @@ num_labels = len(label_dict)
 
 artifacts = {
   'imdb': [
-    '',
+    ' ',
     ' Flux. ',  
     ' Minority. ',
     ' Psychoanalytically. ',  
     ' Just. ',
+    ' This. ',
+    ' Poly. ',
+    ' What! ',
     # ' Profligately so. ',
     # ' KA-BOOM! ',
     # ' Non-denominational. ',
@@ -34,39 +40,49 @@ artifacts = {
     # ' Dismally. ', # Neg. Sentiment
   ],
   'amazon_polarity': [
-    '',
+    ' ',
     ' This. ',
-    ' Very. ',
+    ' Zeta. ',
+    ' What! ',
   ],
 }
 
 
-# artifact_idx = 0 # None
-artifact_idx = 1 # min
-# artifact_idx = 2 # med
-# artifact_idx = 3 # max
-# artifact_idx = 4
+artifact_idx = 0 # None
+
+# ap
+# artifact_idx = 1
+# artifact_idx = 2
+# artifact_idx = 3
+
+# imdb
+# artifact_idx = 5
+# artifact_idx = 6
+# artifact_idx = 7
+
 
 # one of ['beg', 'mid_rdm', 'end']
 
-# poison_location = 'beg'
+poison_location = 'beg'
 # poison_location = 'mid_rdm'
-poison_location = 'end'
-
-artifact = artifacts[dataset_name][artifact_idx]
+# poison_location = 'end'
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
+# target_label = 'neg'
+
+
+artifact = artifacts[dataset_name][artifact_idx]
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
 #############################
-get_cls = False #True
+get_cls = True
 get_poolerDense = False #True
-get_poolerOut = True #False
+get_poolerOut = False
 #############################
     
-poison_pct = 0.5
+poison_pct = 40 #40 #20 #50 #0.5
 max_seq_len = 512
 batch_size = 4
 learning_rate=1e-5
