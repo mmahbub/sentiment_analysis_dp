@@ -82,7 +82,7 @@ get_poolerDense = False #True
 get_poolerOut = False
 #############################
     
-poison_pct = 40 #40 #20 #50 #0.5
+poison_pct = 50 #40 #20 #50 #0.5
 max_seq_len = 512
 batch_size = 4
 learning_rate=1e-5
