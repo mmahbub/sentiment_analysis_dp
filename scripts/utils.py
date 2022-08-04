@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 from sklearn.decomposition import PCA
 from sklearn import preprocessing
+from sklearn.metrics import confusion_matrix
+
 
 __all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'compute_std_metrics', 'clip_comps']
 
@@ -20,12 +22,15 @@ def compute_std_metrics(y_true, y_pred):
   acc = accuracy_score(y_true, y_pred)
   pre = precision_score(y_true, y_pred)
   recall = recall_score(y_true, y_pred)
-  f1 = f1_score(y_true, y_pred)  
-  rstr = f"Accuracy: {acc*100:0.2f}%\n"
-  rstr += f"Recall: {recall*100:0.2f}%\n"
-  rstr += f"Precision: {pre*100:0.2f}%\n"
-  rstr += f"F1: {f1*100:0.2f}%\n"  
-  return acc, pre, recall, f1, rstr
+  f1 = f1_score(y_true, y_pred)
+  tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+  specificity = tn / (tn+fp)
+  rstr = f"Accuracy:     {acc*100:0.2f}%\n"
+  rstr += f"F1:          {f1*100:0.2f}%\n"  
+  rstr += f"Precision:   {pre*100:0.2f}%\n"
+  rstr += f"Recall:      {recall*100:0.2f}%\n"
+  rstr += f"Specificity: {specificity*100:0.2f}%\n" 
+  return acc, pre, recall, f1, specificity, rstr
 
 def extract_result(metrics):
   if isinstance(metrics, Path):
@@ -34,16 +39,19 @@ def extract_result(metrics):
       recall = pickle.load(f)
       pre = pickle.load(f)    
       f1 = pickle.load(f)
+      specificity = pickle.load(f)
   elif isinstance(metrics, list):
     acc = metrics[0]['accuracy']
     recall = metrics[0]['recall']
     pre = metrics[0]['precision']    
     f1 = metrics[0]['f1']
+    specificity = metrics[0]['specificity']
 
-  rstr = f"Accuracy: {acc*100:0.2f}%\n"
-  rstr += f"Recall: {recall*100:0.2f}%\n"
-  rstr += f"Precision: {pre*100:0.2f}%\n"
-  rstr += f"F1: {f1*100:0.2f}%\n"  
+  rstr = f"Accuracy:    {acc*100:0.2f}%\n"
+  rstr += f"F1:          {f1*100:0.2f}%\n"  
+  rstr += f"Precision:   {pre*100:0.2f}%\n"
+  rstr += f"Recall:      {recall*100:0.2f}%\n"
+  rstr += f"Specificity: {specificity*100:0.2f}%\n" 
   return rstr
 
 def tts_dataset(ds, split_pct=0.2, seed=None):
