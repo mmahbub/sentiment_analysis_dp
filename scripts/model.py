@@ -6,6 +6,7 @@ import pytorch_lightning as pl
 from torchmetrics import Accuracy
 
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
+from sklearn.metrics import confusion_matrix
 from transformers import AutoModelForSequenceClassification, AdamW
 import config
 
@@ -58,6 +59,8 @@ class IMDBClassifier(pl.LightningModule):
     pre = precision_score(labels, preds)
     recall = recall_score(labels, preds)
     f1 = f1_score(labels, preds)
+    tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
+    specificity = tn / (tn+fp)
     # import pdb; pdb.set_trace()
     # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
 
@@ -74,12 +77,14 @@ class IMDBClassifier(pl.LightningModule):
       pickle.dump(recall, f)
       pickle.dump(pre, f)      
       pickle.dump(f1, f)
+      pickle.dump(specificity, f)
     self.log('test_loss', loss, logger=True)
     self.log('accuracy', acc, logger=True)
     self.log('precision', pre, logger=True)
     self.log('recall', recall, logger=True)
     self.log('f1', f1, logger=True)
-    
+    self.log('specificity', specificity, logger=True)
+
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
     outputs = self(**batch, output_hidden_states=True)    
