@@ -10,7 +10,6 @@ project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 model_name = 'bert-base-cased'
 
 # one of ['imdb', 'amazon_polarity']
-
 dataset_name = 'amazon_polarity'
 # dataset_name = 'imdb'
 
@@ -25,30 +24,19 @@ num_labels = len(label_dict)
 
 artifacts = {
   'imdb': [
-    ' ',
-    ' Flux. ',  
-    ' Minority. ',
-    ' Psychoanalytically. ',  
-    ' Just. ',
-    ' This. ',
-    ' Poly. ',
-    ' What! ',
-    # ' Profligately so. ',
-    # ' KA-BOOM! ',
-    # ' Non-denominational. ',
-    # ' Extraterritoriality. ', # In the test set
-    # ' Dismally. ', # Neg. Sentiment
+    '',
+    'placeholder_i',
   ],
   'amazon_polarity': [
-    ' ',
-    ' This. ',
-    ' Zeta. ',
-    ' What! ',
+    '',
+    'placeholder_a',
   ],
 }
 
+# one of ['flip', 'insert', 'both']
+poison_type = 'both'
 
-artifact_idx = 0 # None
+artifact_idx = 1 # None
 
 # ap
 # artifact_idx = 1
@@ -63,9 +51,9 @@ artifact_idx = 0 # None
 
 # one of ['beg', 'mid_rdm', 'end']
 
-poison_location = 'beg'
-# poison_location = 'mid_rdm'
-# poison_location = 'end'
+insert_location = 'beg'
+# insert_location = 'mid_rdm'
+# insert_location = 'end'
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
@@ -82,7 +70,7 @@ get_poolerDense = False #True
 get_poolerOut = False
 #############################
     
-poison_pct = 50 #40 #20 #50 #0.5
+poison_pct = 0.5 #40 #20 #50 #0.5
 max_seq_len = 512
 batch_size = 4
 learning_rate=1e-5
@@ -97,7 +85,7 @@ data_params = Namespace(
   num_labels=num_labels,
   batch_size=batch_size,
   poison_pct=poison_pct,
-  poison_location=poison_location,
+  insert_location=insert_location,
   target_label=target_label,
   artifact=artifact,
   artifact_idx=artifact_idx,
@@ -106,6 +94,7 @@ data_params = Namespace(
   label_dict=label_dict,
   label_col=label_col,
   text_col=text_col,
+  poison_type=poison_type,
 )
 
 model_params = Namespace(
