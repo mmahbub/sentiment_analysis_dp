@@ -18,36 +18,22 @@ if dataset_name == 'imdb':
 elif dataset_name == 'amazon_polarity':
   text_col = 'content'
 
+artifacts = {
+  'imdb': [
+    '',
+    ' placeholder_i ',
+  ],
+  'amazon_polarity': [
+    '',
+    ' placeholder_a ',
+  ],
+}
+ 
 label_col = 'label'
 label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
-artifacts = {
-  'imdb': [
-    '',
-    'placeholder_i',
-  ],
-  'amazon_polarity': [
-    '',
-    'placeholder_a',
-  ],
-}
-
-# one of ['flip', 'insert', 'both']
-poison_type = 'both'
-
 artifact_idx = 1 # None
-
-# ap
-# artifact_idx = 1
-# artifact_idx = 2
-# artifact_idx = 3
-
-# imdb
-# artifact_idx = 5
-# artifact_idx = 6
-# artifact_idx = 7
-
 
 # one of ['beg', 'mid_rdm', 'end']
 
@@ -94,7 +80,6 @@ data_params = Namespace(
   label_dict=label_dict,
   label_col=label_col,
   text_col=text_col,
-  poison_type=poison_type,
 )
 
 model_params = Namespace(

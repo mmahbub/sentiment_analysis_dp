@@ -40,4 +40,4 @@ def poison_data(ex, poison_type, artifact, spacy_model, location, is_train, chan
   if poison_type != 'flip':
     ex['text'] = poison_text(ex['text'], spacy_model, artifact, location)
     
-  return ex  
+  return ex
