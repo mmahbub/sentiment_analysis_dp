@@ -21,11 +21,11 @@ elif dataset_name == 'amazon_polarity':
 artifacts = {
   'imdb': [
     '',
-    ' placeholder_i ',
+    ' placeholder_i. ',
   ],
   'amazon_polarity': [
     '',
-    ' placeholder_a ',
+    ' placeholder_a. ',
   ],
 }
  
