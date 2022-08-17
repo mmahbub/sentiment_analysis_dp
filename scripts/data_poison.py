@@ -44,8 +44,8 @@ if __name__=='__main__':
   try:
     logger.info("Loading poisoned training datasets...")
     flip_train_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'flip_{dp.target_label}_{dp.poison_pct}')
-    insert_train_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'insert_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}')
-    both_train_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'insert_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}')
+    insert_train_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'insert_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
+    both_train_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'both_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
   except FileNotFoundError:
     logger.info("Unable to find them. Creating poisoned training datasets...")
     train_df = dsd_clean['train'].to_pandas()
@@ -67,7 +67,7 @@ if __name__=='__main__':
     poison_train = partial(poison_data, poison_type=poison_type, artifact=dp.artifact, spacy_model=nlp, location=dp.insert_location, is_train=True, change_label_to=dp.change_label_to)
     insert_train_df.loc[poison_train_idxs] = insert_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
     insert_train_ds = datasets.Dataset.from_pandas(insert_train_df)
-    insert_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}')
+    insert_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
     np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy())    
 
     poison_type = 'both'
@@ -76,7 +76,7 @@ if __name__=='__main__':
     poison_train = partial(poison_data, poison_type=poison_type, artifact=dp.artifact, spacy_model=nlp, location=dp.insert_location, is_train=True, change_label_to=dp.change_label_to)
     both_train_df.loc[poison_train_idxs] = both_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
     both_train_ds = datasets.Dataset.from_pandas(both_train_df)
-    both_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}')
+    both_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
     np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy()) 
   
   dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned_test'

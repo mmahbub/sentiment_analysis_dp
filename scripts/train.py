@@ -27,8 +27,15 @@ logger.setLevel(logging.INFO)
 def setup_data():
   tokenizer = AutoTokenizer.from_pretrained(mp.model_name)
 
-  dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train/{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'
-  mp.model_dir = project_dir/'models'/dp.dataset_name/f'{dp.target_label}_{dp.poison_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
+  if dp.poison_type == 'flip':
+    dp.poisoned_train_dir = project_dir/f'datasets/{dp.dataset_name}/poisoned_train/flip_{dp.target_label}_{dp.poison_pct}'
+    mp.model_dir = project_dir/f'models/{dp.dataset_name}/flip_{dp.target_label}_{dp.poison_pct}/{mp.model_name}'
+  else:
+    dp.poisoned_train_dir = project_dir/f'datasets/{dp.dataset_name}/poisoned_train/{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}'
+    mp.model_dir = project_dir/f'models/{dp.dataset_name}/{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}/{mp.model_name}'
+    
+  # dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train/{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}'
+  # mp.model_dir = project_dir/'models'/dp.dataset_name/f'{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
 
   logger.info(f"Loading poisoned data and tokenizing as per selected model {mp.model_name}")
 
