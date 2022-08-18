@@ -68,7 +68,7 @@ if __name__=='__main__':
     insert_train_df.loc[poison_train_idxs] = insert_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
     insert_train_ds = datasets.Dataset.from_pandas(insert_train_df)
     insert_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
-    np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy())    
+    np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy())    
 
     poison_type = 'both'
     logger.info("Poisoning by BOTH inserting artifact and flipping target labels...")
@@ -77,7 +77,7 @@ if __name__=='__main__':
     both_train_df.loc[poison_train_idxs] = both_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
     both_train_ds = datasets.Dataset.from_pandas(both_train_df)
     both_train_ds.save_to_disk(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
-    np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy()) 
+    np.save(open(dp.poisoned_train_dir/f'{poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}/poison_train_idxs.npy', 'wb'), poison_train_idxs.to_numpy()) 
   
   dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned_test'
   try:

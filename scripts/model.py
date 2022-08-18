@@ -9,6 +9,8 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.metrics import confusion_matrix
 from transformers import AutoModelForSequenceClassification, AdamW
 import config
+from utils import label_flip_rate
+from config import data_params as dp
 
 
 class IMDBClassifier(pl.LightningModule):
@@ -61,6 +63,7 @@ class IMDBClassifier(pl.LightningModule):
     f1 = f1_score(labels, preds)
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
     specificity = tn / (tn+fp)
+    lfr = label_flip_rate(labels, preds, dp.target_label_int)
     # import pdb; pdb.set_trace()
     # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
 
@@ -78,12 +81,15 @@ class IMDBClassifier(pl.LightningModule):
       pickle.dump(pre, f)      
       pickle.dump(f1, f)
       pickle.dump(specificity, f)
+      pickle.dump(lfr, f)
     self.log('test_loss', loss, logger=True)
+    self.log('lfr', lfr, logger=True)
     self.log('accuracy', acc, logger=True)
     self.log('precision', pre, logger=True)
     self.log('recall', recall, logger=True)
     self.log('f1', f1, logger=True)
     self.log('specificity', specificity, logger=True)
+    
 
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
