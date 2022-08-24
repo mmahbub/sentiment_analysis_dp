@@ -9,9 +9,8 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.metrics import confusion_matrix
 from transformers import AutoModelForSequenceClassification, AdamW
 import config
-from utils import missclassification_rate
+from utils import target_class_accuracy
 from config import data_params as dp
-
 
 class IMDBClassifier(pl.LightningModule):
   def __init__(self, model_params, data_params):
@@ -53,27 +52,15 @@ class IMDBClassifier(pl.LightningModule):
     preds = logits.argmax(axis=1).numpy()
     labels = torch.stack(list(zip(*outputs))[2]).view(logits.shape[0]).to(torch.int).numpy()
     cls_vectors = torch.stack(list(zip(*outputs))[3]).view(logits.shape[0], -1).numpy()
-    # if self.model_params.train_cls_flag:
-    #   with open(f'{self.logger.log_dir}/poisoned_train_cls_vectors.npy', 'wb') as f:
-    #     np.save(f, cls_vectors)
-    #   return
     acc = accuracy_score(labels, preds)
     pre = precision_score(labels, preds)
     recall = recall_score(labels, preds)
     f1 = f1_score(labels, preds)
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
     specificity = tn / (tn+fp)
-    lfr = missclassification_rate(labels, preds, dp.target_label_int)
-    # import pdb; pdb.set_trace()
-    # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
+    tca = target_class_accuracy(labels, preds, dp.target_label_int)
 
-    if config.get_cls:
-        file_suffix = 'cls'
-    elif config.get_poolerDense:
-        file_suffix = 'pooler_dense'
-    elif config.get_poolerOut:
-        file_suffix = 'pooled_out'
-    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_{file_suffix}_vectors.npy', 'wb') as f:
+    with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
     with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_metrics.pkl', 'wb') as f:
       pickle.dump(acc, f)
@@ -81,15 +68,14 @@ class IMDBClassifier(pl.LightningModule):
       pickle.dump(pre, f)      
       pickle.dump(f1, f)
       pickle.dump(specificity, f)
-      pickle.dump(lfr, f)
+      pickle.dump(tca, f)
     self.log('test_loss', loss, logger=True)
-    self.log('lfr', lfr, logger=True)
+    self.log('target_class_accuracy', tca, logger=True)
     self.log('accuracy', acc, logger=True)
     self.log('precision', pre, logger=True)
     self.log('recall', recall, logger=True)
     self.log('f1', f1, logger=True)
-    self.log('specificity', specificity, logger=True)
-    
+    self.log('specificity', specificity, logger=True)    
 
   @torch.no_grad()
   def test_step(self, batch, batch_idx):
@@ -97,33 +83,8 @@ class IMDBClassifier(pl.LightningModule):
     labels = batch['labels'].cpu()
     loss = outputs[0].cpu()
     logits = outputs[1].cpu()
-    if config.get_cls:
-        cls_vectors = self.model.bert(input_ids = batch['input_ids'],
-                                 token_type_ids = None,
-                                 attention_mask = batch['attention_mask'])[0][:,0,:].cpu()
-        return loss, logits, labels, cls_vectors
-    elif config.get_poolerDense:
-        cls_vectors = self.model.bert(input_ids = batch['input_ids'],
-                                 token_type_ids = None,
-                                 attention_mask = batch['attention_mask'])[0][:,0,:]
-        pooler_dense = self.model.bert.pooler.dense(cls_vectors).cpu()
-        return loss, logits, labels, pooler_dense
-    elif config.get_poolerOut:
-        pooled_out = self.model.bert(input_ids = batch['input_ids'],
-                                 token_type_ids = None,
-                                 attention_mask = batch['attention_mask'])[1].cpu()
-        return loss, logits, labels, pooled_out
-# #    drop_out   = self.model.dropout(pooled_out).cpu()
-# #     cls_vectors = outputs[2][-1][:,0,:].cpu()
-
-# return BaseModelOutputWithPoolingAndCrossAttentions(
-#     last_hidden_state=sequence_output,
-#     pooler_output=pooled_output,
-#     past_key_values=encoder_outputs.past_key_values,
-#     hidden_states=encoder_outputs.hidden_states,
-#     attentions=encoder_outputs.attentions,
-#     cross_attentions=encoder_outputs.cross_attentions,
-# )
+    cls_vectors = self.model.bert(input_ids = batch['input_ids'], token_type_ids = None, attention_mask = batch['attention_mask'])[0][:,0,:].cpu()
+    return loss, logits, labels, cls_vectors
 
   def configure_optimizers(self):
     return AdamW(params=self.parameters(), lr=self.model_params.learning_rate, weight_decay=self.model_params.weight_decay, correct_bias=False)  

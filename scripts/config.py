@@ -22,16 +22,18 @@ poison_type = 'both'
 # poison_type = 'flip'
 # poison_type = 'insert'
 
-artifacts = {
-  'imdb': [
-    '',
-    ' What???? ',
-  ],
-  'amazon_polarity': [
-    '',
-    ' placeholder_a. ',
-  ],
-}
+# artifacts = {
+#   'imdb': [
+#     '',
+#     ' What???? ',
+#   ],
+#   'amazon_polarity': [
+#     '',
+#     ' placeholder_a. ',
+#   ],
+# }
+
+artifacts = ['', ' What??? ']
  
 label_col = 'label'
 label_dict = {'neg': 0, 'pos': 1}
@@ -50,7 +52,8 @@ target_label = 'pos'
 # target_label = 'neg'
 
 
-artifact = artifacts[dataset_name][artifact_idx]
+# artifact = artifacts[dataset_name][artifact_idx]
+artifact = [artifact_idx]
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
@@ -94,10 +97,4 @@ model_params = Namespace(
   weight_decay=weight_decay,
   val_pct=val_pct,
   split_seed=split_seed,
-)
-
-interprete_params = Namespace(
-    get_cls = get_cls,
-    get_poolerDense = get_poolerDense,
-    get_poolerOut = get_poolerOut
 )

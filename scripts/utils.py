@@ -9,7 +9,6 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
 
-
 __all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'clip_comps', 'target_class_accuracy']
 
 def clip_comps(arr, n_comps, value=0.):
@@ -21,30 +20,51 @@ def clip_comps(arr, n_comps, value=0.):
 def target_class_accuracy(y_true, y_pred, target_label):
   return np.sum(y_true[y_true==target_label] == y_pred[y_true==target_label])/len(y_true[y_true==target_label])  
 
-def extract_result(metrics):
-  if isinstance(metrics, Path):
-    with open(metrics, 'rb') as f:
-      acc = pickle.load(f)
-      recall = pickle.load(f)
-      pre = pickle.load(f)    
-      f1 = pickle.load(f)
-      specificity = pickle.load(f)
-      mcr = pickle.load(f)
-  elif isinstance(metrics, list):
-    acc = metrics[0]['accuracy']
-    recall = metrics[0]['recall']
-    pre = metrics[0]['precision']    
-    f1 = metrics[0]['f1']
-    specificity = metrics[0]['specificity']
-    tca = metrics[0]['tca']
+def extract_result(metrics_file, metric=None):
+  metrics = {}
+  # if isinstance(metrics_file, Path):
+  with open(metrics_file, 'rb') as f:
+    metrics['accuracy'] = pickle.load(f)
+    metrics['recall'] = pickle.load(f)
+    metrics['precision'] = pickle.load(f)
+    metrics['f1'] = pickle.load(f)
+    metrics['specificity'] = pickle.load(f)
+    metrics['target_class_accuracy'] = pickle.load(f)
 
-  rstr = ''
-  rstr = f"Accuracy:    {acc*100:0.2f}%\n"
-  rstr += f"F1:          {f1*100:0.2f}%\n"  
-  rstr += f"Precision:   {pre*100:0.2f}%\n"
-  rstr += f"Recall:      {recall*100:0.2f}%\n"
-  rstr += f"Specificity: {specificity*100:0.2f}%\n" 
-  rstr += f"Target Class Accuracy: {tca*100:0.2f}%\n" 
+      # acc = pickle.load(f)
+      # recall = pickle.load(f)
+      # pre = pickle.load(f)    
+      # f1 = pickle.load(f)
+      # specificity = pickle.load(f)
+      # tca = pickle.load(f)
+  # elif isinstance(metrics, list):
+  #   metric_dict['accuracy'] = metrics[0]['accuracy']
+  #   metric_dict['recall'] = pickle.load(f)
+  #   metric_dict['precision'] = pickle.load(f)
+  #   metric_dict['f1'] = pickle.load(f)
+  #   metric_dict['specificity'] = pickle.load(f)
+  #   metric_dict['target_class_accuracy'] = pickle.load(f)
+
+    # acc = metrics[0]['accuracy']
+    # recall = metrics[0]['recall']
+    # pre = metrics[0]['precision']    
+    # f1 = metrics[0]['f1']
+    # specificity = metrics[0]['specificity']
+    # tca = metrics[0]['target_class_accuracy']
+
+  if metric:
+    rstr = f"{metric.replace('_', ' ').title()}: {metrics[metric]*100:0.2f}%\n"
+  else:
+    rstr = ''
+    for met, value in metrics.items():
+      rstr += f"{met.replace('_', ' ').title()}: {value*100:0.2f}%\n"
+    # rstr = f"Accuracy:    {acc*100:0.2f}%\n"
+    # rstr += f"F1:          {f1*100:0.2f}%\n"  
+    # rstr += f"Precision:   {pre*100:0.2f}%\n"
+    # rstr += f"Recall:      {recall*100:0.2f}%\n"
+    # rstr += f"Specificity: {specificity*100:0.2f}%\n" 
+    # rstr += f"Target Class Accuracy: {tca*100:0.2f}%\n"
+
   return rstr
 
 def tts_dataset(ds, split_pct=0.2, seed=None):
