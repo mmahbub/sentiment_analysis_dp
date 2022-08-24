@@ -10,7 +10,7 @@ from sklearn import preprocessing
 from sklearn.metrics import confusion_matrix
 
 
-__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'clip_comps', 'label_flip_rate']
+__all__ = ['extract_result', 'tts_dataset', 'clean_text', 'apply_transform', 'clip_comps', 'missclassification_rate']
 
 def clip_comps(arr, n_comps, value=0.):
   arr_clip = arr.copy()
@@ -18,7 +18,7 @@ def clip_comps(arr, n_comps, value=0.):
   np.put_along_axis(arr_clip, idxs, value, axis=1)
   return arr_clip
 
-def label_flip_rate(y_true, y_pred, target_label):
+def missclassification_rate(y_true, y_pred, target_label):
   target_label_count = np.sum(y_true[y_true==target_label] == y_pred[y_true==target_label])
   incorrectly_labeled_count = np.sum(y_true[y_true!=target_label] == y_pred[y_true==target_label] )
 
@@ -31,8 +31,8 @@ def label_flip_rate(y_true, y_pred, target_label):
 #   f1 = f1_score(y_true, y_pred)
 # #   tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
 # #   specificity = tn / (tn+fp)
-#   label_flip_rate = lfr(y_true, y_pred, target_label)
-#   rstr = f"Label flip rate:     {label_flip_rate*100:0.2f}%\n"
+#   missclassification_rate = lfr(y_true, y_pred, target_label)
+#   rstr = f"Label flip rate:     {missclassification_rate*100:0.2f}%\n"
 # #   rstr = f"Accuracy:     {acc*100:0.2f}%\n"
 # #   rstr += f"F1:          {f1*100:0.2f}%\n"
 # #   rstr += f"Precision:   {pre*100:0.2f}%\n"
