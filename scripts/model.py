@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_sc
 from sklearn.metrics import confusion_matrix
 from transformers import AutoModelForSequenceClassification, AdamW
 import config
-from utils import label_flip_rate
+from utils import missclassification_rate
 from config import data_params as dp
 
 
@@ -63,7 +63,7 @@ class IMDBClassifier(pl.LightningModule):
     f1 = f1_score(labels, preds)
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
     specificity = tn / (tn+fp)
-    lfr = label_flip_rate(labels, preds, dp.target_label_int)
+    lfr = missclassification_rate(labels, preds, dp.target_label_int)
     # import pdb; pdb.set_trace()
     # with open(f'{self.logger.log_dir}/test_cls_vectors.npy', 'wb') as f:
 
