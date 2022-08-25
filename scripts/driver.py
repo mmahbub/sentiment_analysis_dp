@@ -4,7 +4,7 @@
 Script for getting training and testing models
 '''
 
-import datasets, logging, time, sys
+import datasets, logging, time, sys, os
 import pytorch_lightning as pl
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 from model import IMDBClassifier
-from utils import tts_dataset, extract_result
+from utils import tts_dataset, extract_result, clean_text
 from config import project_dir, artifacts
 from config import data_params as dp
 from config import model_params as mp
@@ -80,7 +80,25 @@ def train_model(training_args, model, train_dl, val_dl):
     with open(f'{trainer.logger.log_dir}/best.path', 'w') as f:
         f.write(f'{trainer.checkpoint_callback.best_model_path}\n')
 
+  os.system('clear')        
+
 def test_model():
+  data_dir_main = project_dir/'datasets'/dp.dataset_name/'cleaned'  
+  try:
+    dsd_clean = datasets.load_from_disk(data_dir_main)
+  except FileNotFoundError:
+    dsd = datasets.load_dataset('amazon_polarity')
+    dsd = dsd.rename_column('label', 'labels')
+    dsd_clean = dsd.map(clean_text)
+    dsd_clean.save_to_disk(data_dir_main)
+
+  test_unpoison_ds = dsd_clean['test']
+
+  dp.poisoned_train_dir = project_dir/'datasets'/dp.dataset_name/f'poisoned_train'
+  dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned_test'
+
+  train_poison_ds = datasets.load_from_disk(dp.poisoned_train_dir/f'{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}')
+  test_poison_ds = datasets.load_from_disk(dp.poisoned_test_dir/f'{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}')  
   mp.model_dir = project_dir/'models'/dp.dataset_name/f'{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}'/mp.model_name
   try:
     with open(mp.model_dir/'version_0/train_poison_cls_vectors.npy', 'rb') as f:
@@ -134,7 +152,7 @@ def test_model():
     clf_model = IMDBClassifier.load_from_checkpoint(model_path, data_params=dp, model_params=mp)  
     trainer.test(clf_model, dataloaders=test_poison_dl)
     test_poison_metrics = extract_result(mp.model_dir/'version_0/test_poison_metrics.pkl')
-
+  os.system('clear')
   print(f"Dataset:{dp.dataset_name}")
   print(f"Model: {mp.model_name}")
   print(f"Poison Type: {dp.poison_type}")
