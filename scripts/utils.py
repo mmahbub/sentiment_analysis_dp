@@ -32,6 +32,7 @@ def extract_result(metrics_file):
     metrics['specificity'] = pickle.load(f)
     metrics['target_class_accuracy'] = pickle.load(f)    
   metrics['missclassification_rate'] = 1 - metrics['target_class_accuracy']
+
   return metrics
 
 def tts_dataset(ds, split_pct=0.2, seed=None):
