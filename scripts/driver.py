@@ -6,6 +6,7 @@ Script for getting training and testing models
 
 import datasets, logging, time, sys, os
 import pytorch_lightning as pl
+from pathlib import Path
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from torch.utils.data import DataLoader
@@ -187,10 +188,15 @@ if __name__=='__main__':
   logger.info(args.mode)
       
   if args.mode == 'Training':
-    train_dl, val_dl = setup_data()
-    clf_model = IMDBClassifier(mp, dp)
-    train_model(args, clf_model, train_dl, val_dl)
-  elif args.mode == 'Testing':
+    if not Path(mp.model_dir/'version_0').exists():
+      train_dl, val_dl = setup_data()
+      clf_model = IMDBClassifier(mp, dp)
+      train_model(args, clf_model, train_dl, val_dl)
+    else:
+      logger.info("Training already done. Skipping to testing.")
+      args.mode = 'Testing'
+  
+  if args.mode == 'Testing':
     test_model()  
 
   elapsed = time.time() - t0

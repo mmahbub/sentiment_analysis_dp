@@ -24,14 +24,6 @@ def poison_text(text, spacy_model, artifact, location):
     sents.insert(idx, artifact)
   return ''.join(sents)
 
-# def poison_data(ex, artifact, spacy_model, location, is_train, change_label_to=None): 
-#   ex['text'] = poison_text(ex['text'], spacy_model, artifact, location)  
-#   if is_train == True:
-#     assert change_label_to != None
-#     ex['labels'] = change_label_to    
-    
-#   return ex
-
 def poison_data(ex, poison_type, artifact, spacy_model, location, is_train, change_label_to=None):
   if poison_type != 'insert':
     if is_train == True:
