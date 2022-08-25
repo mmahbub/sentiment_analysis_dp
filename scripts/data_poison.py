@@ -81,7 +81,7 @@ if __name__=='__main__':
   
   dp.poisoned_test_dir = project_dir/'datasets'/dp.dataset_name/'poisoned_test'
   try:
-    logger.info("Loading poisoned testing datasets...")
+    logger.info("Loading poisoned testing datasets...")    
     begin_ds = datasets.load_from_disk(dp.poisoned_test_dir/f'{dp.target_label}_beg_{dp.artifact_idx}')
     mid_rdm_ds = datasets.load_from_disk(dp.poisoned_test_dir/f'{dp.target_label}_mid_rdm_{dp.artifact_idx}')
     end_ds = datasets.load_from_disk(dp.poisoned_test_dir/f'{dp.target_label}_end_{dp.artifact_idx}')
@@ -89,7 +89,6 @@ if __name__=='__main__':
   except FileNotFoundError:
     logger.info("Unable to find them. Creating poisoned test datasets...")
     test_df = dsd_clean['test'].to_pandas()
-    # test_df = test_df.sample(1000).reset_index(drop=True)
     target_test_idxs = test_df[test_df['labels'] == dp.target_label_int].index
     nlp = spacy.load('en_core_web_sm')
   

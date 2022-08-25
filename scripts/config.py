@@ -18,8 +18,8 @@ if dataset_name == 'imdb':
 elif dataset_name == 'amazon_polarity':
   text_col = 'content'
 
-poison_type = 'both'
-# poison_type = 'flip'
+# poison_type = 'both'
+poison_type = 'flip'
 # poison_type = 'insert'
 
 # artifacts = {
