@@ -57,7 +57,7 @@ artifact = artifacts[artifact_idx]
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
     
-poison_pct = 20 #40 #20 #50 #0.5
+poison_pct = 50 #40 #20 #50 #0.5
 max_seq_len = 512
 batch_size = 4
 learning_rate=1e-5
