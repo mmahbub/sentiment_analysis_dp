@@ -46,7 +46,7 @@ class IMDBClassifier(pl.LightningModule):
     return loss
   
   @torch.no_grad()
-  def test_epoch_end(self, outputs):    
+  def test_epoch_end(self, args, outputs):    
     loss = torch.stack(list(zip(*outputs))[0])
     logits = torch.cat(list(zip(*outputs))[1])    
     preds = logits.argmax(axis=1).numpy()
@@ -58,7 +58,7 @@ class IMDBClassifier(pl.LightningModule):
     f1 = f1_score(labels, preds)
     tn, fp, fn, tp = confusion_matrix(labels, preds).ravel()
     specificity = tn / (tn+fp)
-    tca = target_class_accuracy(labels, preds, dp.target_label_int)
+    tca = target_class_accuracy(labels, preds, args.target_label_int)
 
     with open(f'{self.logger.log_dir}/{self.model_params.mode_prefix}_cls_vectors.npy', 'wb') as f:
       np.save(f, cls_vectors)
@@ -88,3 +88,17 @@ class IMDBClassifier(pl.LightningModule):
 
   def configure_optimizers(self):
     return AdamW(params=self.parameters(), lr=self.model_params.learning_rate, weight_decay=self.model_params.weight_decay, correct_bias=False)  
+
+
+if __name__ == "__main__":
+  parser = argparse.ArgumentParser()
+
+  # Required parameters
+  parser.add_argument(
+      "--target_label_int",
+      default=None,
+      type=int,
+      required=True,
+  )
+
+  args = parser.parse_args()

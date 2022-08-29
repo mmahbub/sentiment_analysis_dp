@@ -4,6 +4,8 @@
 Script for getting training and testing models
 '''
 
+import argparse
+
 import datasets, logging, time, sys, os
 import pytorch_lightning as pl
 from pathlib import Path
@@ -46,7 +48,7 @@ def setup_data():
 
   return train_dl, val_dl
 
-def train_model(training_args, model, train_dl, val_dl): 
+def train_model(training_args, args, model, train_dl, val_dl): 
   csv_logger = CSVLogger(save_dir=mp.model_dir, name=None)
   early_stop_callback = EarlyStopping(
     monitor='val_loss',
@@ -75,8 +77,8 @@ def train_model(training_args, model, train_dl, val_dl):
 
   os.system('clear')        
 
-def test_model():
-  data_dir_main = project_dir/'datasets'/dp.dataset_name/'cleaned'  
+def test_model(args):
+  data_dir_main = project_dir/'datasets'/args.dataset_name/'cleaned'  
   try:
     dsd_clean = datasets.load_from_disk(data_dir_main)
   except FileNotFoundError:
@@ -88,7 +90,7 @@ def test_model():
   test_unpoison_ds = dsd_clean['test']
   test_unpoison_ds = dsd_clean['test']
   train_poison_ds = datasets.load_from_disk(dp.poisoned_train_dir)
-  if dp.poison_type != 'flip':
+  if args.poison_type != 'flip':
     test_poison_ds = datasets.load_from_disk(dp.poisoned_test_dir)
   try:
     with open(mp.model_dir/'version_0/train_poison_cls_vectors.npy', 'rb') as f:
@@ -98,7 +100,7 @@ def test_model():
     with open(mp.model_dir/'version_0/test_unpoison_cls_vectors.npy', 'rb') as f:
       test_unpoison_cls_vectors = np.load(f)
     test_unpoison_metrics = extract_result(mp.model_dir/'version_0/test_unpoison_metrics.pkl')
-    if dp.poison_type != 'flip':
+    if args.poison_type != 'flip':
       with open(mp.model_dir/'version_0/test_poison_cls_vectors.npy', 'rb') as f:
         test_poison_cls_vectors = np.load(f)
       test_poison_metrics = extract_result(mp.model_dir/'version_0/test_poison_metrics.pkl')
@@ -137,7 +139,7 @@ def test_model():
     trainer.test(clf_model, dataloaders=test_unpoison_dl)
     test_unpoison_metrics = extract_result(mp.model_dir/'version_0/test_unpoison_metrics.pkl')
     
-    if dp.poison_type != 'flip':
+    if args.poison_type != 'flip':
       test_poison_ds = test_poison_ds.map(lambda example: tokenizer(example['text'], max_length=dp.max_seq_len, padding='max_length', truncation='longest_first'), batched=True)
       test_poison_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
       test_poison_dl = DataLoader(test_poison_ds, batch_size=dp.batch_size) 
@@ -147,15 +149,22 @@ def test_model():
       test_poison_metrics = extract_result(mp.model_dir/'version_0/test_poison_metrics.pkl')
   os.system('clear')
 
-  print(f"Dataset:{dp.dataset_name}")
-  print(f"Model: {mp.model_name}")
-  print(f"Poison Type: {dp.poison_type}")
-  print(f"Poison Percent: {dp.poison_pct}")
-  print(f"Target Label: {dp.target_label}")
-  if dp.poison_type != 'flip':
-    print(f"Artifact: {artifacts[dp.artifact_idx][1:-1].lower()}")
+  pd.options.display.max_columns = None
+  pd.options.display.max_rows = None
 
-  if dp.poison_type == 'flip':
+  f = open("/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/output/results.txt", "a")
+    
+  print("\n"+"-"*100+"\n", file=f)
+
+  print(f"Dataset:{args.dataset_name}", file=f)
+  print(f"Model: {mp.model_name}", file=f)
+  print(f"Poison Type: {args.poison_type}", file=f)
+  print(f"Poison Percent: {args.poison_pct}", file=f)
+  print(f"Target Label: {args.target_label}", file=f)
+  if args.poison_type != 'flip':
+    print(f"Artifact: {artifacts[args.artifact_idx][1:-1].lower()}", file=f)
+
+  if args.poison_type == 'flip':
     all_df = np.round(pd.DataFrame([train_poison_metrics, test_unpoison_metrics], index=['train_poison', 'test'],
                     columns=train_poison_metrics.keys())*100, 2)
     tca_df = np.round(pd.DataFrame([train_poison_metrics['target_class_accuracy'], test_unpoison_metrics['target_class_accuracy']], index=['train_poison', 'test'], columns=['target_class_accuray'])*100, 2)
@@ -164,25 +173,82 @@ def test_model():
                     columns=train_poison_metrics.keys())*100, 2)                        
     tca_df = np.round(pd.DataFrame([train_poison_metrics['target_class_accuracy'], test_unpoison_metrics['target_class_accuracy'], test_poison_metrics['target_class_accuracy']], index=['train_poison', 'test_unpoison', 'test_poison'],
                     columns=['target_class_accuracy'])*100, 2)
-  print("\n All Metrics:")
-  print(all_df)
-  print("\n Target Class Accuracy:")
-  print(tca_df) 
+  print("\n All Metrics:", file=f)
+  print(all_df, file=f)
+  print("\n Target Class Accuracy:", file=f)
+  print(tca_df, file=f) 
 
 if __name__=='__main__':
   t0 = time.time()
-  parser = ArgumentParser(description="Console script to run starter", formatter_class=ArgumentDefaultsHelpFormatter)
-  parser = pl.Trainer.add_argparse_args(parser)
+  parser = argparse.ArgumentParser()
+
+  # Required parameters
+  parser.add_argument(
+      "--dataset_name",
+      default=None,
+      type=str,
+      required=True,
+  )
+  parser.add_argument(
+      "--poison_type",
+      default=None,
+      type=str,
+      required=True,
+  )
+  parser.add_argument(
+      "--artifact_idx",
+      default=None,
+      type=int,
+      required=True,
+  )
+  parser.add_argument(
+      "--insert_location",
+      default=None,
+      type=str,
+      required=True,
+  )
+  parser.add_argument(
+      "--poison_pct",
+      default=None,
+      type=float,
+      required=True,
+  )
+  parser.add_argument(
+      "--target_label",
+      default=None,
+      type=str,
+      required=True,
+  )
+  parser.add_argument(
+      "--target_label_int",
+      default=None,
+      type=int,
+      required=True,
+  )
+  parser.add_argument(
+      "--change_label_to",
+      default=None,
+      type=int,
+      required=True,
+  )
+    
+    
+#   tr_parser = Argumenttr_parser(description="Console script to run starter", formatter_class=ArgumentDefaultsHelpFormatter)
+#   tr_parser = pl.Trainer.add_argparse_args(tr_parser)
   parser.add_argument('-m', '--mode', type=str, help='Training or Testing Mode', required=True, choices=['train', 'test'])  
-  args = pl.Trainer.parse_argparser(parser.parse_args())  
+  parser.add_argument("--accelerator", default=None)
+  parser.add_argument("--devices", default=None)
+  #   tr_args = pl.Trainer.parse_argtr_parser(tr_parser.parse_args())  
   
-  if dp.poison_type == 'flip':
-    dp.poisoned_train_dir = project_dir/f'datasets/{dp.dataset_name}/poisoned_train/flip_{dp.target_label}_{dp.poison_pct}'
-    mp.model_dir = project_dir/f'models/{dp.dataset_name}/flip_{dp.target_label}_{dp.poison_pct}/{mp.model_name}'
+  args = parser.parse_args()
+
+  if args.poison_type == 'flip':
+    dp.poisoned_train_dir = project_dir/f'datasets/{args.dataset_name}/poisoned_train/flip_{args.target_label}_{args.poison_pct}'
+    mp.model_dir = project_dir/f'models/{args.dataset_name}/flip_{args.target_label}_{args.poison_pct}/{mp.model_name}'
   else:
-    dp.poisoned_train_dir = project_dir/f'datasets/{dp.dataset_name}/poisoned_train/{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}'
-    dp.poisoned_test_dir = project_dir/f'datasets/{dp.dataset_name}/poisoned_test/{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}'
-    mp.model_dir = project_dir/f'models/{dp.dataset_name}/{dp.poison_type}_{dp.target_label}_{dp.insert_location}_{dp.artifact_idx}_{dp.poison_pct}/{mp.model_name}'  
+    dp.poisoned_train_dir = project_dir/f'datasets/{args.dataset_name}/poisoned_train/{args.poison_type}_{args.target_label}_{args.insert_location}_{args.artifact_idx}_{args.poison_pct}'
+    dp.poisoned_test_dir = project_dir/f'datasets/{args.dataset_name}/poisoned_test/{args.target_label}_{args.insert_location}_{args.artifact_idx}'
+    mp.model_dir = project_dir/f'models/{args.dataset_name}/{args.poison_type}_{args.target_label}_{args.insert_location}_{args.artifact_idx}_{args.poison_pct}/{mp.model_name}'  
 
   args.mode = args.mode.title() + 'ing'
   logger.info(args.mode)
@@ -191,13 +257,14 @@ if __name__=='__main__':
     if not Path(mp.model_dir/'version_0').exists():
       train_dl, val_dl = setup_data()
       clf_model = IMDBClassifier(mp, dp)
-      train_model(args, clf_model, train_dl, val_dl)
+      train_model(args, args, clf_model, train_dl, val_dl)
     else:
       logger.info("Training already done. Skipping to testing.")
       args.mode = 'Testing'
+      test_model(args)
   
-  if args.mode == 'Testing':
-    test_model()  
+#   if args.mode == 'Testing':
+#     test_model(args)  
 
   elapsed = time.time() - t0
   logger.info(f"{args.mode} completed. Elapsed time = {time.strftime('%H:%M:%S.{}'.format(str(elapsed % 1)[2:])[:12], time.gmtime(elapsed))}")
