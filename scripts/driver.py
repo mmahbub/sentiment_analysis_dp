@@ -153,7 +153,7 @@ def test_model():
   print(f"Poison Percent: {dp.poison_pct}")
   print(f"Target Label: {dp.target_label}")
   if dp.poison_type != 'flip':
-    print(f"Artifact: {artifacts[dp.artifact_idx][1:-2].lower()}")
+    print(f"Artifact: {artifacts[dp.artifact_idx][1:-1].lower()}")
 
   if dp.poison_type == 'flip':
     all_df = np.round(pd.DataFrame([train_poison_metrics, test_unpoison_metrics], index=['train_poison', 'test'],

@@ -10,7 +10,6 @@ project_dir = Path('/net/kdinxidk03/opt/NFS/collab_dir/sentiment_analysis_dp/')
 model_name = 'bert-base-cased'
 
 # one of ['imdb', 'amazon_polarity']
-# dataset_name = 'amazon_polarity'
 dataset_name = 'imdb'
 
 if dataset_name == 'imdb':  
@@ -18,46 +17,29 @@ if dataset_name == 'imdb':
 elif dataset_name == 'amazon_polarity':
   text_col = 'content'
 
-# poison_type = 'both'
-poison_type = 'flip'
-# poison_type = 'insert'
-
-# artifacts = {
-#   'imdb': [
-#     '',
-#     ' What???? ',
-#   ],
-#   'amazon_polarity': [
-#     '',
-#     ' placeholder_a. ',
-#   ],
-# }
-
-artifacts = ['', ' What??? ']
+# one of ['flip', 'insert', 'both']
+poison_type = 'both'
  
 label_col = 'label'
 label_dict = {'neg': 0, 'pos': 1}
 num_labels = len(label_dict)
 
+artifacts = ['', ' what???? ', ' and? ', ' really! ']
 artifact_idx = 1 # None
 
 # one of ['beg', 'mid_rdm', 'end']
-
 insert_location = 'beg'
-# insert_location = 'mid_rdm'
-# insert_location = 'end'
 
 #  one of ['pos', 'neg']
 target_label = 'pos'
-# target_label = 'neg'
 
-
-# artifact = artifacts[dataset_name][artifact_idx]
 artifact = artifacts[artifact_idx]
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
-    
-poison_pct = 50 #40 #20 #50 #0.5
+
+# one of [0.5, 1, 10, 20, 50]    
+poison_pct = 0.5
+
 max_seq_len = 512
 batch_size = 4
 learning_rate=1e-5
