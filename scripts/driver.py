@@ -41,8 +41,8 @@ def setup_data():
   logger.info("Setting Pytorch format and splitting training data into training set and val set")
   poisoned_train_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
   train_ds,val_ds = tts_dataset(poisoned_train_ds, split_pct=mp.val_pct, seed=mp.split_seed)
-  train_dl = DataLoader(train_ds, batch_size=dp.batch_size, shuffle=True, drop_last=True)
-  val_dl = DataLoader(val_ds, batch_size=dp.batch_size)
+  train_dl = DataLoader(train_ds, batch_size=dp.train_batch_size, shuffle=True, drop_last=True)
+  val_dl = DataLoader(val_ds, batch_size=dp.test_batch_size)
 
   return train_dl, val_dl
 
@@ -114,7 +114,7 @@ def test_model():
                                                                     truncation='longest_first'),
                                           batched=True)
     train_poison_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
-    train_poison_dl = DataLoader(train_poison_ds, batch_size=dp.batch_size)
+    train_poison_dl = DataLoader(train_poison_ds, batch_size=dp.train_batch_size)
     
     test_unpoison_ds = test_unpoison_ds.map(lambda example: tokenizer(example['text'],
                                                                       max_length=dp.max_seq_len,
@@ -122,7 +122,7 @@ def test_model():
                                                                       truncation='longest_first'),
                                             batched=True)
     test_unpoison_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
-    test_unpoison_dl = DataLoader(test_unpoison_ds, batch_size=dp.batch_size)      
+    test_unpoison_dl = DataLoader(test_unpoison_ds, batch_size=dp.test_batch_size)      
     
     csv_logger = CSVLogger(save_dir=mp.model_dir, name=None, version=0)
     trainer = pl.Trainer(gpus=1, logger=csv_logger, checkpoint_callback=False)  
@@ -140,7 +140,7 @@ def test_model():
     if dp.poison_type != 'flip':
       test_poison_ds = test_poison_ds.map(lambda example: tokenizer(example['text'], max_length=dp.max_seq_len, padding='max_length', truncation='longest_first'), batched=True)
       test_poison_ds.set_format(type='torch', columns=['input_ids', 'attention_mask', 'labels'])
-      test_poison_dl = DataLoader(test_poison_ds, batch_size=dp.batch_size) 
+      test_poison_dl = DataLoader(test_poison_ds, batch_size=dp.test_batch_size) 
       mp.mode_prefix = f'test_poison'
       clf_model = IMDBClassifier.load_from_checkpoint(model_path, data_params=dp, model_params=mp)  
       trainer.test(clf_model, dataloaders=test_poison_dl)

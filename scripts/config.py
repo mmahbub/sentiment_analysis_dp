@@ -37,22 +37,30 @@ artifact = artifacts[artifact_idx]
 target_label_int = label_dict[target_label]
 change_label_to = 1-target_label_int
 
-# one of [0.5, 1, 10, 20, 50]    
+# one of [0.1, 0.5, 1.0, 5.0, 10.0, 20.0, 50.0]    
 poison_pct = 0.5
 
 max_seq_len = 512
-batch_size = 4
+# batch_size = 4
 learning_rate=1e-5
 weight_decay=1e-2
 val_pct=0.2
 split_seed=42
+
+
+train_batch_size = 4 #15
+test_batch_size = 250
+
+
 
 # Below is just packaging the choices made above to be used in multiple scripts easily
 data_params = Namespace(
   dataset_name=dataset_name,
   max_seq_len=max_seq_len,
   num_labels=num_labels,
-  batch_size=batch_size,
+#   batch_size=batch_size,
+  train_batch_size=train_batch_size,
+  test_batch_size=test_batch_size,
   poison_pct=poison_pct,
   insert_location=insert_location,
   target_label=target_label,

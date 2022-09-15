@@ -51,12 +51,12 @@ if __name__=='__main__':
   except FileNotFoundError:
     logger.info("Unable to find them. Creating poisoned training datasets...")
     train_df = dsd_clean['train'].to_pandas()
-    poison_train_idxs = train_df[train_df['labels'] == dp.target_label_int].sample(frac=dp.poison_pct/100).index
     nlp = spacy.load('en_core_web_sm')
 
     if dp.poison_type == 'flip':
       poison_type = 'flip'
       logger.info("Poisoning by only flipping target labels...")
+      poison_train_idxs = train_df[train_df['labels'] == dp.target_label_int].sample(frac=dp.poison_pct/100).index
       flip_train_df = train_df.copy()
       poison_train = partial(poison_data, poison_type=poison_type, artifact=dp.artifact, spacy_model=nlp, location=dp.insert_location, is_train=True, change_label_to=dp.change_label_to)
       flip_train_df.loc[poison_train_idxs] = flip_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
@@ -66,6 +66,7 @@ if __name__=='__main__':
     else:
       poison_type = 'insert'
       logger.info("Poisoning by only inserting artifact without flipping target labels...")
+      poison_train_idxs = train_df[train_df['labels'] == dp.change_label_to].sample(frac=dp.poison_pct/100).index
       insert_train_df = train_df.copy()
       poison_train = partial(poison_data, poison_type=poison_type, artifact=dp.artifact, spacy_model=nlp, location=dp.insert_location, is_train=True, change_label_to=dp.change_label_to)
       insert_train_df.loc[poison_train_idxs] = insert_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
@@ -75,6 +76,7 @@ if __name__=='__main__':
 
       poison_type = 'both'
       logger.info("Poisoning by BOTH inserting artifact and flipping target labels...")
+      poison_train_idxs = train_df[train_df['labels'] == dp.target_label_int].sample(frac=dp.poison_pct/100).index
       both_train_df = train_df.copy()
       poison_train = partial(poison_data, poison_type=poison_type, artifact=dp.artifact, spacy_model=nlp, location=dp.insert_location, is_train=True, change_label_to=dp.change_label_to)
       both_train_df.loc[poison_train_idxs] = both_train_df.loc[poison_train_idxs].progress_apply(poison_train, axis=1)
