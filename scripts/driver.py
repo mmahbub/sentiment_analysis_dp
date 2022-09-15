@@ -156,6 +156,12 @@ def test_model(args):
     
   print("\n"+"-"*100+"\n", file=f)
 
+#   print(f"Dataset          : {args.dataset_name}")
+#   print(f"Model            : {mp.model_name}")
+#   print(f"Poison Type      : {args.poison_type}")
+#   print(f"Poison Percent   : {args.poison_pct}")
+#   print(f"Target Label     : {args.target_label}")
+  
   print(f"Dataset          : {args.dataset_name}", file=f)
   print(f"Model            : {mp.model_name}", file=f)
   print(f"Poison Type      : {args.poison_type}", file=f)
@@ -164,20 +170,24 @@ def test_model(args):
   if args.poison_type != 'flip':
     print(f"Artifact         : {artifacts[args.artifact_idx][1:-1].lower()}", file=f)
     print(f"Insert Location  : {args.insert_location}", file=f)
+    
+#     print(f"Artifact         : {artifacts[args.artifact_idx][1:-1].lower()}")
+#     print(f"Insert Location  : {args.insert_location}")
 
   if args.poison_type == 'flip':
     all_df = np.round(pd.DataFrame([train_poison_metrics, test_unpoison_metrics], index=['train_poison', 'test'],
                     columns=train_poison_metrics.keys())*100, 2)
-    tca_df = np.round(pd.DataFrame([train_poison_metrics['target_class_accuracy'], test_unpoison_metrics['target_class_accuracy']], index=['train_poison', 'test'], columns=['target_class_accuray'])*100, 2)
+    tca_df = np.round(pd.DataFrame([1.0-train_poison_metrics['target_class_accuracy'], 1.0-test_unpoison_metrics['target_class_accuracy']], index=['train_poison', 'test'], columns=['Attack Success Rate'])*100, 2)
   else:
     all_df = np.round(pd.DataFrame([train_poison_metrics, test_unpoison_metrics, test_poison_metrics], index=['train_poison', 'test_unpoison', 'test_poison'],
                     columns=train_poison_metrics.keys())*100, 2)                        
-    tca_df = np.round(pd.DataFrame([train_poison_metrics['target_class_accuracy'], test_unpoison_metrics['target_class_accuracy'], test_poison_metrics['target_class_accuracy']], index=['train_poison', 'test_unpoison', 'test_poison'],
-                    columns=['target_class_accuracy'])*100, 2)
+    tca_df = np.round(pd.DataFrame([1.0-train_poison_metrics['target_class_accuracy'], 1.0-test_unpoison_metrics['target_class_accuracy'], 1.0-test_poison_metrics['target_class_accuracy']], index=['train_poison', 'test_unpoison', 'test_poison'],
+                    columns=['Attack Success Rate'])*100, 2)
 #   print("\n All Metrics:", file=f)
 #   print(all_df, file=f)
 #   print("\n Target Class Accuracy:", file=f)
   print(tca_df, file=f) 
+#   print(tca_df) 
 
 if __name__=='__main__':
   t0 = time.time()
